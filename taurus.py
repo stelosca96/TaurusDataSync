@@ -95,10 +95,10 @@ class Taurus:
         return self.settings.video_record
 
     def new_mex(self, mex, mex_type):
-        print(mex_type)
+        # print(mex_type)
         if mex_type == "0":
             self.data.decode(mex)
-            print("New data: ", self.data.timer)
+            # print("New data: ", self.data.timer)
         if mex_type == "1":
             self.settings.update(mex)
         # TIPI PACCHHETI
@@ -115,10 +115,10 @@ class Taurus:
         # 11 -> UPDATE SETTINGS REQUEST
 
     def set_circumference(self, value):
-        if value > 2:
+        if float(value) >= 2:
             print("Errore: dimensione ruota troppo grande!!")
             return False
-        if value < 1:
+        if float(value) <= 1:
             print("Errore: dimensione ruota troppo piccola!!")
             return False
         mex = str(self.settings.bike) + ";4;" + str(value)

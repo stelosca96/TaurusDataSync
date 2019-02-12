@@ -39,4 +39,4 @@ class DataPacket:
         self.speed = parts[6]
         self.timer = parts[7]
         self.gear = parts[8]
-        print(self.hr, self.timer)
+        # print(self.hr, self.timer)

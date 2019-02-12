@@ -56,7 +56,7 @@ class Communication:
 
     def receiver(self, xbee_message):
         mex = xbee_message.data.decode()
-        print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(), mex))
+        # print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(), mex))
         self.direct_to_bike(mex)
 
     def direct_to_bike(self, mex):

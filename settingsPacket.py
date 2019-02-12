@@ -17,7 +17,7 @@ class SettingsPacket:
         self.led_mode = 0  # Modalità funzionamento LED. 0 -> spenti
         self.circumference = -1  # Circonferenza della ruota. Default 1.450
         self.csv = False  # Decide se avviare o fermare la registrazione su file csv
-        self.timer = 1  # indica se il timer è avviato o in pausa
+        self.timer = 0  # indica se il timer è avviato o in pausa
         # IMPOSTAZIONI DEL POWERMETER
         self.calibration = False  # Indica se il powermeter è in attesa di calibrazione
         self.calibration_value = -1  # Valore della calibrazione del powermeter. Default 500
@@ -52,8 +52,8 @@ class SettingsPacket:
         self.video_record = str2bool(parts[16])
         self.video_running = str2bool(parts[17])
         self.synchronized = True
-        print(self.synchronized, self.video_record)
-        print(self.circumference)
+        # print(self.synchronized, self.video_record)
+        # print(self.circumference)
         print("SINCRONIZZAZIONE AVVENUTA")
 
     def __len__(self):
