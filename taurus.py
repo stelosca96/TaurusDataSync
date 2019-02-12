@@ -12,6 +12,9 @@ class Taurus:
         print(self.settings.__len__())
         self.settings.update(self.settings.encode())
 
+    def synchronized(self):
+        return self.settings.synchronized
+
     def get_heartrate(self):
         return self.data.hr
 
@@ -109,6 +112,7 @@ class Taurus:
         # 8 -> MESSAGGI SU SCHERMO
         # 9 -> LED
         # 10 -> GESTIONE RASPBERRY
+        # 11 -> UPDATE SETTINGS REQUEST
 
     def set_circumference(self, value):
         if value > 2:
@@ -118,11 +122,13 @@ class Taurus:
             print("Errore: dimensione ruota troppo piccola!!")
             return False
         mex = str(self.settings.bike) + ";4;" + str(value)
+        print(mex)
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
 
-    def set_calibration(self, value="-1"):
-        if value > 0:
+    def set_calibration(self, value=-1):
+        if int(value) > 0:
             mex = str(self.settings.bike) + ";3;0;" + str(value)
         else:
             mex = str(self.settings.bike) + ";3;1;" + str(value)
+        print(mex)
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
