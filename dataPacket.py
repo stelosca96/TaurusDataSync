@@ -1,5 +1,5 @@
 class DataPacket:
-    def __init__(self, heartrate=None, power=None, cadence=None, speed=None, distance=None, timer=None, gear=None):
+    def __init__(self, heartrate=-1, power=-1, cadence=-1, speed=-1, distance=-1, timer=-1, gear=-1):
         self.bike = 0
         self.type = 0
         self.hr = heartrate
@@ -11,13 +11,13 @@ class DataPacket:
         self.gear = gear
 
     def to_str(self):
-        timer = "Time: " + self.timer + "s\n"
-        hr = "Heart Rate: " + self.hr + "bpm\n"
-        power = "Power: " + self.power + "W\n"
-        cadence = "Cadence: " + self.cad + "rpm\n"
-        speed = "Speed: " + self.speed + "km/h\n"
-        distance = "Distance: " + self.distance + "km\n"
-        gear = "Gear: " + self.gear + "\n"
+        timer = "Time: " + str(self.timer) + "s\n"
+        hr = "Heart Rate: " + str(self.hr) + "bpm\n"
+        power = "Power: " + str(self.power) + "W\n"
+        cadence = "Cadence: " + str(self.cad) + "rpm\n"
+        speed = "Speed: " + str(self.speed) + "km/h\n"
+        distance = "Distance: " + str(self.distance) + "km\n"
+        gear = "Gear: " + str(self.gear) + "\n"
         return timer + hr + power + cadence + speed + distance + gear
 
     def __len__(self):

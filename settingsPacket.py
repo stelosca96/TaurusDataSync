@@ -12,7 +12,7 @@ class SettingsPacket:
         self.lista = list()
         
         self.bike = 0
-        self.type = 0
+        self.type = 1
         self.synchronized = False
         
         # NON MODIFICABILI DA REMOTO, SOLO A SCOPO INFORMATIVO
@@ -30,8 +30,7 @@ class SettingsPacket:
         self.led_mode = 0  # Modalità funzionamento LED. 0 -> spenti
         self.circumference = -1  # Circonferenza della ruota. Default 1.450
         self.csv = False  # Decide se avviare o fermare la registrazione su file csv
-        self.timer = 0  # indica se il timer è avviato o in pausa
-        
+        self.timer = 1  # indica se il timer è avviato o in pausa
         # IMPOSTAZIONI DEL POWERMETER
         self.calibration = False  # Indica se il powermeter è in attesa di calibrazione
         self.calibration_value = -1  # Valore della calibrazione del powermeter. Default 500
@@ -58,24 +57,24 @@ class SettingsPacket:
             self.lista[index].value = value
        
         '''
-        self.log = parts[2]
-        self.video = parts[3]
-        self.ant = parts[4]
-        self.video_running = parts[5]
-        self.powermeter_running = parts[6]
-        self.heartrate_running = parts[7]
-        self.speed_running = parts[8]
+        self.log = str2bool(parts[2])
+        self.video = str2bool(parts[3])
+        self.ant = str2bool(parts[4])
+        self.video_running = str2bool(parts[5])
+        self.powermeter_running = str2bool(parts[6])
+        self.heartrate_running = str2bool(parts[7])
+        self.speed_running = str2bool(parts[8])
         self.average_power_time = parts[9]
         self.led_mode = parts[10]
         self.circumference = parts[11]
         self.csv = parts[12]
         self.timer = parts[13]
-        self.calibration = parts[14]
+        self.calibration = str2bool(parts[14])
         self.calibration_value = parts[15]
-        self.video_record = parts[16]
-        self.video_running = parts[17]
+
+        self.video_record = str2bool(parts[16])
+        self.video_running = str2bool(parts[17])
         '''
-                        
         self.synchronized = True
         
         # per continuare ad accedere in modo diretto 
