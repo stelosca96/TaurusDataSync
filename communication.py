@@ -1,56 +1,58 @@
-from digi.xbee.devices import XBeeDevice
 from digi.xbee.devices import RemoteXBeeDevice
 from digi.xbee.models.address import XBee64BitAddress
-
-from taurus import Taurus
+from digi.xbee.devices import XBeeDevice
+# from taurus import Taurus
 
 PORT = "COM5"
 BAUD_RATE = 115200
-REMOTE_DEVICE_ADDRESS = "0013A200418AE577"
 
 
 class Communication:
+    xbee_state = False
+    device = None
 
-    def __init__(self, taurus: Taurus, taurus_x: Taurus):
-        self.xbee_state = False
-
+    def __init__(self, taurus, taurus_x):
         self.taurus = taurus
         self.taurus_x = taurus_x
 
         print("INIT COMMUNICATION")
-        self.device = XBeeDevice(PORT, BAUD_RATE)
+        Communication.device = XBeeDevice(PORT, BAUD_RATE)
         try:
-            self.device.open()
-            self.remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(REMOTE_DEVICE_ADDRESS))
-            self.device.add_data_received_callback(self.receiver)
-            self.xbee_state = True
+            Communication.device.open()
+            Communication.device.add_data_received_callback(self.receiver)
+            Communication.xbee_state = True
         except:
-            self.xbee_state = False
+            Communication.xbee_state = False
             print("XBEE non collegato")
 
-    def send(self, data):
-        mex = data.encode()
-        print("Data:\n", mex, "\nSize: ", data.__len__())
-        if self.xbee_state:
-            self.device.send_data_async(self.remote_device, mex)
+    @staticmethod
+    def send(address, mex):
+        print("Data:\n", mex, "\nSize: ", mex.__len__())
+        if Communication.xbee_state:
+            remote_device = RemoteXBeeDevice(Communication.device, XBee64BitAddress.from_hex_string(address))
+            Communication.device.send_data_async(remote_device, mex)
         # data.decode(mex)
 
-    def send_sync(self, data):
-        mex = data.encode()
-        print("Data:\n", mex, "\nSize: ", data.__len__())
-        if self.xbee_state:
+    @staticmethod
+    def send_sync(address, mex):
+        print("Data: ", mex, "\nSize: ", mex.__len__())
+        if Communication.xbee_state:
+            remote_device = RemoteXBeeDevice(Communication.device, XBee64BitAddress.from_hex_string(address))
+
             try:
-                self.device.send_data(self.remote_device, mex)
+                Communication.device.send_data(remote_device, mex)
                 return True
             except:
                 print("Pacchetto non ricevuto dal destinatario")
                 return False
+        return False
 
-    def send_broadcast(self, data):
+    @staticmethod
+    def send_broadcast(data):
         mex = data.encode()
-        print("Data:\n", mex, "\nSize: ", data.__len__())
-        if self.xbee_state:
-            self.device.send_data_broadcast(self.remote_device, mex)
+        print("Data: ", mex, "\nSize: ", data.__len__())
+        if Communication.xbee_state:
+            Communication.device.send_data_broadcast(mex)
 
     def receiver(self, xbee_message):
         mex = xbee_message.data.decode()
