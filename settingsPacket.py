@@ -48,7 +48,8 @@ class SettingsPacket:
                bool2str(self.heartrate_running) + ";" + bool2str(self.speed_running) + ";" + \
                str(self.average_power_time) + ";" + str(self.led_mode) + ";" + str(self.circumference) + ";" +\
                bool2str(self.csv) + ";" + str(self.timer) + ";" + bool2str(self.calibration) + ";" +\
-               str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" + bool2str(self.video_running)'''
+               str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" + bool2str(self.video_running)
+        '''
 
     def update(self, mex):
         parts = mex.split(";")
@@ -71,10 +72,10 @@ class SettingsPacket:
         self.timer = parts[13]
         self.calibration = str2bool(parts[14])
         self.calibration_value = parts[15]
-
         self.video_record = str2bool(parts[16])
         self.video_running = str2bool(parts[17])
         '''
+                        
         self.synchronized = True
         
         # per continuare ad accedere in modo diretto 
@@ -98,9 +99,6 @@ class Parameter:
         return self.value
     
     def __str__(self):
-        # per adesso lascio il passaggio del parametro 
-        # self.value, si puo' incorporare il metodo
-        # a questa classe e aumentare l'astrazione
         return str(int(self.value)) if isinstance(self.value, bool) else str(self.value)
     
                         
