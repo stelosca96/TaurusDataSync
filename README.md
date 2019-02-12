@@ -1,1 +1,1 @@
-"# TaurusDataSync" 
+Taurus Data Sync
