@@ -87,7 +87,19 @@ while choice != "q":
             elif choice == "7":
                 print("Non ancora implementato")
             elif choice == "8":
-                print("Non ancora implementato")
+                print("MESSAGGI SU SCHERMO")
+                mex = input("Messaggio: ")
+                durata = input("Durata su schermo(0 per non sceglierla): ")
+                if int(durata) != 0:
+                    schermo = input("Su quale schermo(0 per non sceglierlo): ")
+                    if int(schermo) != 0:
+                        print(schermo != 0)
+                        taurus.set_message(mex, durata, schermo)
+                        print(mex, durata, schermo)
+                    else:
+                        taurus.set_message(mex, durata)
+                else:
+                    taurus.set_message(mex)
             elif choice == "9":
                 print("Non ancora implementato")
             elif choice == "10":

@@ -1,6 +1,7 @@
 from dataPacket import DataPacket
 from settingsPacket import SettingsPacket
 from communication import Communication
+from mexPacket import MexPacket
 
 
 class Taurus:
@@ -8,9 +9,11 @@ class Taurus:
         self.REMOTE_DEVICE_ADDRESS = "0013A200418AE5A9"
         self.data = DataPacket()
         self.settings = SettingsPacket()
+        self.mex = MexPacket()
         print(self.settings.encode())
         print(self.settings.__len__())
         self.settings.update(self.settings.encode())
+        # self.i = 0
 
     def synchronized(self):
         return self.settings.synchronized
@@ -98,9 +101,13 @@ class Taurus:
         # print(mex_type)
         if mex_type == "0":
             self.data.decode(mex)
+            # print(self.i)
+            # self.i += 1
             # print("New data: ", self.data.timer)
         if mex_type == "1":
             self.settings.update(mex)
+        if mex_type == "8":
+            self.mex.decode(mex)
         # TIPI PACCHHETI
         # 0 -> DATI
         # 1 -> IMPOSTAZIONI SALVATE SU TAURUS
@@ -130,5 +137,15 @@ class Taurus:
             mex = str(self.settings.bike) + ";3;0;" + str(value)
         else:
             mex = str(self.settings.bike) + ";3;1;" + str(value)
+        print(mex)
+        return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def set_message(self, string, time=7, display=2):
+        packet = MexPacket(string, time, display)
+        try:
+            mex = packet.encode()
+        except ValueError as err:
+            print(err.args)
+            return False
         print(mex)
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
