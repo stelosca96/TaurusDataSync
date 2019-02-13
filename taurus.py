@@ -10,9 +10,9 @@ class Taurus:
         self.data = DataPacket()
         self.settings = SettingsPacket()
         self.mex = MexPacket()
-        print(self.settings.encode())
-        print(self.settings.__len__())
-        self.settings.update(self.settings.encode())
+        # print(self.settings.encode())
+        # print(self.settings.__len__())
+        # self.settings.update(self.settings.encode())
         # self.i = 0
 
     def synchronized(self):
@@ -154,4 +154,12 @@ class Taurus:
             print(err.args)
             return False
         print(mex)
+        return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def reset_timer_distance(self):
+        mex = str(self.settings.bike) + ";5"
+        return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def settings_request(self):
+        mex = str(self.settings.bike) + ";11"
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)

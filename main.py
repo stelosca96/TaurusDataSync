@@ -4,8 +4,8 @@ from communication import Communication
 taurus = Taurus()
 taurus_x = Taurus()
 communication = Communication(taurus, taurus_x)
-
-print(taurus.set_circumference(1.46))
+taurus.settings_request()
+# 2print(taurus.set_circumference(1.46))
 # input()
 
 
@@ -97,7 +97,8 @@ while choice != "q":
                 dim = input("Dimensione circonferenza: ")
                 taurus.set_circumference(dim)
             elif choice == "5":
-                print("Non ancora implementato")
+                print("Reset distanza e cronometro")
+                taurus.reset_timer_distance()
             elif choice == "6":
                 print("Non ancora implementato")
             elif choice == "7":
@@ -121,7 +122,8 @@ while choice != "q":
             elif choice == "10":
                 print("Non ancora implementato")
             elif choice == "11":
-                print("Non ancora implementato")
+                taurus.settings_request()
+                print("Richiesta delle impostazioni attuali inviata")
 
             # TIPI PACCHHETI
             # 0 -> DATI
