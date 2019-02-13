@@ -97,6 +97,12 @@ class Taurus:
     def get_video_record_state(self):
         return self.settings.video_record
 
+    def get_message(self, riga):
+        if riga == 1:
+            return self.mex.mex1, self.mex.time1
+        else:
+            return self.mex.mex2, self.mex.time2
+
     def new_mex(self, mex, mex_type):
         # print(mex_type)
         if mex_type == "0":

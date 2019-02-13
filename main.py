@@ -9,6 +9,14 @@ print(taurus.set_circumference(1.46))
 # input()
 
 
+def print_mex():
+    print("MEX")
+    mex, tempo_rimanente = taurus.get_message(1)
+    print("Mex 1: ", mex, " Tempo rimanente: ", tempo_rimanente)
+    mex, tempo_rimanente = taurus.get_message(2)
+    print("Mex 2: ", mex, " Tempo rimanente: ", tempo_rimanente)
+
+
 def print_data():
     print("DATA:")
     print("Timer: ", taurus.get_timer())
@@ -51,6 +59,7 @@ while choice != "q":
             print("RICEZIONE: ")
             print("1) Dati")
             print("2) Settings")
+            print("2) Messaggi a schermo")
             choice = input()
             if choice == "1":
                 while choice != "q":
@@ -61,6 +70,13 @@ while choice != "q":
                 choice = ""
             elif choice == "2":
                 print_settings()
+            if choice == "3":
+                while choice != "q":
+                    print_mex()
+                    print("Premere un tasto qualsiasi per aggiornare...")
+                    print("q) Ritorna")
+                    choice = input()
+                choice = ""
     elif choice == "2":
         while choice != "q":
             print("TRASMISSIONE: ")
