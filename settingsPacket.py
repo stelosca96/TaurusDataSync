@@ -23,6 +23,8 @@ class SettingsPacket:
         self.calibration_value = -1  # Valore della calibrazione del powermeter. Default 500
         # REGISTRAZIONE VIDEO ON BOARD
         self.video_record = False  # La implementiamo veramente???
+        self.antilope = False  # SORPRESA PER ANDREA, TENETELO SEGRETO
+
 
     def encode(self):
         return str(self.bike) + ";" + str(self.type) + ";" + \
@@ -31,7 +33,9 @@ class SettingsPacket:
                bool2str(self.heartrate_running) + ";" + bool2str(self.speed_running) + ";" + \
                str(self.average_power_time) + ";" + str(self.led_mode) + ";" + str(self.circumference) + ";" +\
                bool2str(self.csv) + ";" + str(self.timer) + ";" + bool2str(self.calibration) + ";" +\
-               str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" + bool2str(self.video_running)
+               str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" +\
+               bool2str(self.video_running) + ";" + bool2str(self.antilope)
+
 
     def update(self, mex):
         parts = mex.split(";")
@@ -51,6 +55,7 @@ class SettingsPacket:
         self.calibration_value = parts[15]
         self.video_record = str2bool(parts[16])
         self.video_running = str2bool(parts[17])
+        self.antilope = str2bool(parts[18])
         self.synchronized = True
         # print(self.synchronized, self.video_record)
         # print(self.circumference)

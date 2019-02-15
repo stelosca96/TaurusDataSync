@@ -88,6 +88,9 @@ class Taurus:
         elif state == "2":
             return "Autopausa"
 
+    def get_antilope(self):
+        return self.settings.antilope
+
     def get_calibration_request(self):
         return self.settings.calibration
 
@@ -170,4 +173,12 @@ class Taurus:
         else:
             s = "0"
         mex = str(self.settings.bike) + ";6;" + s
+        return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def set_antilope(self, state):
+        if state:
+            s = "1"
+        else:
+            s = "0"
+        mex = str(self.settings.bike) + ";13;" + s
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)

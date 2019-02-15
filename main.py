@@ -131,7 +131,13 @@ while choice != "q":
             elif choice == "11":
                 taurus.settings_request()
                 print("Richiesta delle impostazioni attuali inviata")
-
+            elif choice == "13":
+                print("Antilope: ", taurus.get_antilope())
+                new_state = not taurus.get_antilope()
+                print("Cambio lo stato a: ", new_state)
+                taurus.set_antilope(new_state)
+                time.sleep(0.5)
+                print("Il nuovo stato è: ", taurus.get_antilope())
             # TIPI PACCHHETI
             # 0 -> DATI
             # 1 -> IMPOSTAZIONI SALVATE SU TAURUS
