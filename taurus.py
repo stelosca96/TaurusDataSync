@@ -163,3 +163,11 @@ class Taurus:
     def settings_request(self):
         mex = str(self.settings.bike) + ";11"
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def set_video_record(self, state):
+        if state:
+            s = "1"
+        else:
+            s = "0"
+        mex = str(self.settings.bike) + ";6;" + s
+        return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)

@@ -1,6 +1,8 @@
 from taurus import Taurus
 from communication import Communication
 
+import time
+
 taurus = Taurus()
 taurus_x = Taurus()
 communication = Communication(taurus, taurus_x)
@@ -100,7 +102,12 @@ while choice != "q":
                 print("Reset distanza e cronometro")
                 taurus.reset_timer_distance()
             elif choice == "6":
-                print("Non ancora implementato")
+                print("Stato registrazione: ", taurus.get_video_record_state())
+                new_state = not taurus.get_video_record_state()
+                print("Cambio lo stato a: ", new_state)
+                taurus.set_video_record(new_state)
+                time.sleep(0.5)
+                print("Il nuovo stato è: ", taurus.get_video_record_state())
             elif choice == "7":
                 print("Non ancora implementato")
             elif choice == "8":
