@@ -115,11 +115,11 @@ while choice != "q":
                 mex = input("Messaggio: ")
                 durata = input("Durata su schermo(0 per non sceglierla): ")
                 if int(durata) != 0:
-                    schermo = input("Su quale schermo(0 per non sceglierlo): ")
-                    if int(schermo) != 0:
-                        print(schermo != 0)
-                        taurus.set_message(mex, durata, schermo)
-                        print(mex, durata, schermo)
+                    priority = input("Priorità(0 per non sceglierla): ")
+                    if int(priority) != 0:
+                        print(priority != 0)
+                        taurus.set_message(mex, durata, priority)
+                        print(mex, durata, priority)
                     else:
                         taurus.set_message(mex, durata)
                 else:

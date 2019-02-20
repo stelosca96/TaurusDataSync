@@ -149,8 +149,8 @@ class Taurus:
         print(mex)
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
 
-    def set_message(self, string, time=7, display=2):
-        packet = MexPacket(string, time, display)
+    def set_message(self, string, time=7, priority=4):
+        packet = MexPacket(string, priority, time)
         try:
             mex = packet.encode()
         except ValueError as err:
