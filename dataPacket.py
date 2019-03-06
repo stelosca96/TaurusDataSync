@@ -1,3 +1,6 @@
+import json
+
+
 class DataPacket:
     def __init__(self, heartrate=-1, power=-1, cadence=-1, speed=-1, distance=-1, timer=-1, gear=-1):
         self.bike = 0
@@ -19,6 +22,18 @@ class DataPacket:
         distance = "Distance: " + str(self.distance) + "km\n"
         gear = "Gear: " + str(self.gear) + "\n"
         return timer + hr + power + cadence + speed + distance + gear
+
+    def to_json(self):
+        data = {
+            "time": float(self.timer),
+            "heartrate": int(self.hr),
+            "power": int(self.power),
+            "cadence": int(self.cad),
+            "speed": int(self.speed),
+            "distance": int(self.distance),
+            "gear": int(self.gear),
+        }
+        return json.dumps(data)
 
     def __len__(self):
         return len(self.encode())

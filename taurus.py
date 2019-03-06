@@ -182,3 +182,6 @@ class Taurus:
             s = "0"
         mex = str(self.settings.bike) + ";13;" + s
         return Communication.send_sync(self.REMOTE_DEVICE_ADDRESS, mex)
+
+    def get_data_json(self):
+        return self.data.to_json()
