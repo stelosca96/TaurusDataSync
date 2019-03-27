@@ -39,27 +39,32 @@ class SettingsPacket:
 
     def update(self, mex):
         parts = mex.split(";")
-        self.log = str2bool(parts[2])
-        self.video = str2bool(parts[3])
-        self.ant = str2bool(parts[4])
-        self.video_running = str2bool(parts[5])
-        self.powermeter_running = str2bool(parts[6])
-        self.heartrate_running = str2bool(parts[7])
-        self.speed_running = str2bool(parts[8])
-        self.average_power_time = parts[9]
-        self.led_mode = parts[10]
-        self.circumference = parts[11]
-        self.csv = parts[12]
-        self.timer = parts[13]
-        self.calibration = str2bool(parts[14])
-        self.calibration_value = parts[15]
-        self.video_record = str2bool(parts[16])
-        self.video_running = str2bool(parts[17])
-        self.antilope = str2bool(parts[18])
-        self.synchronized = True
-        # print(self.synchronized, self.video_record)
-        # print(self.circumference)
-        print("SINCRONIZZAZIONE AVVENUTA")
+        leng = len(parts)
+        print(len(parts))
+        if leng >= 18:
+            self.log = str2bool(parts[2])
+            self.video = str2bool(parts[3])
+            self.ant = str2bool(parts[4])
+            self.video_running = str2bool(parts[5])
+            self.powermeter_running = str2bool(parts[6])
+            self.heartrate_running = str2bool(parts[7])
+            self.speed_running = str2bool(parts[8])
+            self.average_power_time = parts[9]
+            self.led_mode = parts[10]
+            self.circumference = parts[11]
+            self.csv = parts[12]
+            self.timer = parts[13]
+            self.calibration = str2bool(parts[14])
+            self.calibration_value = parts[15]
+            self.video_record = str2bool(parts[16])
+            self.video_running = str2bool(parts[17])
+            self.antilope = str2bool(parts[18])
+            self.synchronized = True
+            # print(self.synchronized, self.video_record)
+            # print(self.circumference)
+            print("SINCRONIZZAZIONE AVVENUTA")
+        else:
+            print("SINCRONIZZAZIONE NON AVVENUTA")
 
     def __len__(self):
         return len(self.encode())

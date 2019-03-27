@@ -3,7 +3,11 @@ from digi.xbee.models.address import XBee64BitAddress
 from digi.xbee.devices import XBeeDevice
 # from taurus import Taurus
 
-PORT = "COM5"
+# todo: differenziare linux e windows
+# PORT = "COM5"
+# PORT = "/dev/ttyUSB0"
+PORT = "/dev/ttyACM0"
+
 BAUD_RATE = 115200
 
 
@@ -17,13 +21,16 @@ class Communication:
 
         print("INIT COMMUNICATION")
         Communication.device = XBeeDevice(PORT, BAUD_RATE)
+        Communication.device.open()
+
         try:
-            Communication.device.open()
+        #    Communication.device.open()
             Communication.device.add_data_received_callback(self.receiver)
             Communication.xbee_state = True
         except:
             Communication.xbee_state = False
             print("XBEE non collegato")
+            exit(-1)
 
     @staticmethod
     def send(address, mex):
@@ -41,6 +48,7 @@ class Communication:
 
             try:
                 Communication.device.send_data(remote_device, mex)
+                print("Ho spedito un pacchetto sync")
                 return True
             except:
                 print("Pacchetto non ricevuto dal destinatario")
