@@ -1,8 +1,5 @@
-from dataPacket import DataPacket
-from settingsPacket import SettingsPacket
 from communication import Communication
-from mexPacket import MexPacket
-
+from packet import *
 
 class Taurus:
     def __init__(self):
@@ -117,18 +114,6 @@ class Taurus:
             self.settings.update(mex)
         if mex_type == "8":
             self.mex.decode(mex)
-        # TIPI PACCHHETI
-        # 0 -> DATI
-        # 1 -> IMPOSTAZIONI SALVATE SU TAURUS
-        # 3 -> CALIBRAZIONE POWERMETER
-        # 4 -> IMPOSTAZIONE CIRCONFERENZA
-        # 5 -> RESET (Distanza, Timer)
-        # 6 -> REGISTRAZIONE VIDEO
-        # 7 -> CALIBRAZIONE CAMBIO
-        # 8 -> MESSAGGI SU SCHERMO
-        # 9 -> LED
-        # 10 -> GESTIONE RASPBERRY
-        # 11 -> UPDATE SETTINGS REQUEST
 
     def set_circumference(self, value):
         if float(value) >= 2:

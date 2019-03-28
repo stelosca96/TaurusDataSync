@@ -1,0 +1,24 @@
+{
+  "bike": 0,
+  "type": 1,
+  "log": "False",
+  "video": "False",
+  "ant": "False",
+  "ant_running": "False",
+  "video_running": "False",
+  "powermeter_running": "False",
+  "heartrate_running": "False",
+  "speed_running": "False",
+
+  "average_power_time": "-1",
+  "led_mode": "0",
+  "circumference": "-1",
+  "csv": "False",
+  "timer": "0",
+
+  "calibration": "False",
+  "calibration_value": "-1",
+
+  "video_record": "False",
+  "antilope": "False",
+}
