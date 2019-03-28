@@ -13,7 +13,8 @@ class SettingsPacket:
         self.heartrate_running = False
         self.speed_running = False
         # MODIFICABILI DA REMOTO
-        self.average_power_time = -1  # Tempo su cui viene calcolata la potenza media. Default 3s
+        # Tempo su cui viene calcolata la potenza media. Default 3s
+        self.average_power_time = -1
         self.led_mode = 0  # Modalità funzionamento LED. 0 -> spenti
         self.circumference = -1  # Circonferenza della ruota. Default 1.450
         self.csv = False  # Decide se avviare o fermare la registrazione su file csv
@@ -25,17 +26,15 @@ class SettingsPacket:
         self.video_record = False  # La implementiamo veramente???
         self.antilope = False  # SORPRESA PER ANDREA, TENETELO SEGRETO
 
-
     def encode(self):
         return str(self.bike) + ";" + str(self.type) + ";" + \
-               bool2str(self.log) + ";" + bool2str(self.video) + ";" + bool2str(self.ant) + ";" + \
-               bool2str(self.video_running) + ";" + bool2str(self.powermeter_running) + ";" +\
-               bool2str(self.heartrate_running) + ";" + bool2str(self.speed_running) + ";" + \
-               str(self.average_power_time) + ";" + str(self.led_mode) + ";" + str(self.circumference) + ";" +\
-               bool2str(self.csv) + ";" + str(self.timer) + ";" + bool2str(self.calibration) + ";" +\
-               str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" +\
-               bool2str(self.video_running) + ";" + bool2str(self.antilope)
-
+            bool2str(self.log) + ";" + bool2str(self.video) + ";" + bool2str(self.ant) + ";" + \
+            bool2str(self.video_running) + ";" + bool2str(self.powermeter_running) + ";" +\
+            bool2str(self.heartrate_running) + ";" + bool2str(self.speed_running) + ";" + \
+            str(self.average_power_time) + ";" + str(self.led_mode) + ";" + str(self.circumference) + ";" +\
+            bool2str(self.csv) + ";" + str(self.timer) + ";" + bool2str(self.calibration) + ";" +\
+            str(self.calibration_value) + ";" + bool2str(self.video_record) + ";" +\
+            bool2str(self.video_running) + ";" + bool2str(self.antilope)
 
     def update(self, mex):
         parts = mex.split(";")

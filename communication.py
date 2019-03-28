@@ -24,7 +24,7 @@ class Communication:
         Communication.device.open()
 
         try:
-        #    Communication.device.open()
+            #    Communication.device.open()
             Communication.device.add_data_received_callback(self.receiver)
             Communication.xbee_state = True
         except:
@@ -36,7 +36,8 @@ class Communication:
     def send(address, mex):
         print("Data:\n", mex, "\nSize: ", mex.__len__())
         if Communication.xbee_state:
-            remote_device = RemoteXBeeDevice(Communication.device, XBee64BitAddress.from_hex_string(address))
+            remote_device = RemoteXBeeDevice(
+                Communication.device, XBee64BitAddress.from_hex_string(address))
             Communication.device.send_data_async(remote_device, mex)
         # data.decode(mex)
 
@@ -44,7 +45,8 @@ class Communication:
     def send_sync(address, mex):
         print("Data: ", mex, "\nSize: ", mex.__len__())
         if Communication.xbee_state:
-            remote_device = RemoteXBeeDevice(Communication.device, XBee64BitAddress.from_hex_string(address))
+            remote_device = RemoteXBeeDevice(
+                Communication.device, XBee64BitAddress.from_hex_string(address))
 
             try:
                 Communication.device.send_data(remote_device, mex)

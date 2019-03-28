@@ -11,7 +11,8 @@ class MexPacket:
         self.time2 = 0
 
         if self.__len__() > 255:
-            raise ValueError('Dimensioni pacchetto superate')  # Alza un'eccezione se le dimensioni dei messaggi
+            # Alza un'eccezione se le dimensioni dei messaggi
+            raise ValueError('Dimensioni pacchetto superate')
             # sono troppo lunghe, probabilmente non avremo mai questo problema perchè a schermo c'è spazio per
             #  visualizzare meno roba ancora
 
@@ -25,7 +26,7 @@ class MexPacket:
 
     def encode(self):
         return str(self.bike) + ";" + str(self.type) + ";" + self.mex_send + ";" + str(self.priority) + ";" + \
-               str(self.time_m)
+            str(self.time_m)
 
     def decode(self, data):
         parts = data.split(";")

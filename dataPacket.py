@@ -40,8 +40,8 @@ class DataPacket:
 
     def encode(self):
         return str(self.bike) + ";" + str(self.type) + ";" + str(self.hr) + ";" +\
-               str(self.power) + ";" + str(self.cad) + ";" + str(self.distance) + ";" + str(self.speed) + ";" + \
-               str(round(self.timer, 2)) + ";" + str(self.gear)
+            str(self.power) + ";" + str(self.cad) + ";" + str(self.distance) + ";" + str(self.speed) + ";" + \
+            str(round(self.timer, 2)) + ";" + str(self.gear)
 
     def decode(self, data):
         parts = data.split(";")
