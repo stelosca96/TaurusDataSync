@@ -3,7 +3,10 @@ from packet import *
 
 class Taurus:
     def __init__(self):
-        self.REMOTE_DEVICE_ADDRESS = "0013A200418AE5A9"
+        # self.REMOTE_DEVICE_ADDRESS = "0013A200418AE5A9" # ANTENNA CON ARDUINO NANO v1
+        # self.REMOTE_DEVICE_ADDRESS = "0013A200418AE577" # ANTENNA CON ARDUINO UNO
+        self.REMOTE_DEVICE_ADDRESS = "0012A200418AF52F"  # ANTENNA CON ARDUINO NANO v2 (cavo giallo)
+
         self.data = DataPacket()
         self.settings = SettingsPacket()
         self.mex = MexPacket()
