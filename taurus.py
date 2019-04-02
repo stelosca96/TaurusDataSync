@@ -1,5 +1,5 @@
-from communication import Communication
-from packet import *
+from .communication import Communication
+from .packet import *
 
 class Taurus:
     def __init__(self):
