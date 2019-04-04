@@ -1,2 +1,2 @@
-from .taurus import Taurus
-from .communication import Communication
+from .packet import *
+from .taurus import *
