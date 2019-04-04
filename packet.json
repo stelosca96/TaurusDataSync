@@ -1,0 +1,34 @@
+{
+  "0": {
+    "time": "",
+    "heartrate": "",
+    "power": "",
+    "cadence": "",
+    "speed": "",
+    "distance": "",
+    "gear": ""
+  },
+  "1": {
+    "log": "",
+    "video": "",
+    "ant": "",
+    "ant_running": "",
+    "video_running": "",
+    "powermeter_running": "",
+    "heartrate_running": "",
+    "speed_running": "",
+    "average_power_time": "",
+    "led_mode": "",
+    "circumference": "",
+    "csv": "",
+    "timer": "",
+    "calibration": "",
+    "calibration_value": "",
+    "video_record": "",
+    "antilope": ""
+  },
+  "2": {
+
+  }
+
+}

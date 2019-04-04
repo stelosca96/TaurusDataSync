@@ -1,40 +1,41 @@
 import json
-from enum import IntEnum
-
-
-class Param(IntEnum):
-    BIKE = 0
-    TYPE = 1
-    LOG = 2
-    VIDEO = 3
-    ANT = 4
-    ANT_RUNNING = 5
-    VIDEO_RUNNING = 6
-    POWERMETER_RUNNING = 7
-    HEARTRATE_RUNNING = 8
-    SPEED_RUNNING = 9
-    AVERAGE_POWER_TIME = 10
-    LED_MODE = 11
-    CIRCUMFERENCE = 12
-    CSV = 13
-    TIMER = 14
-    CALIBRATION = 15
-    CALIBRATION_VALUE = 16
-    VIDEO_RECORD = 17
-    ANTILOPE = 18
 
 
 class Packet:
-    def __init__(self):
-        pass
+    def __init__(self, data=list()):
+        self.content = data
 
     def encode(self):
-        pass
+        return ';'.join(map(str, self.content))
 
-    def decode(self):
-        pass
+    def decode(self, data):
+        self.content = [field for field in data]
+        return self.content
+
+    def jsonify(self):
+        type = self.content[1]
+        content = self.content[2:]
+        content.reverse()
+
+        with open('packet.json') as f:
+            res = json.load(f)[str(type)]
+
+        for key, _ in res.items():
+            res[key] = str(content.pop())
+
+        return json.dumps(res)
+
+    def __len__(self):
+        return len(self.content)
+
+    def __str__(self):
+        # TODO: farlo meglio
+        return str(self.content)
 
 
+
+
+''''
 class SettingsPacket:
     def __init__(self):
         self.lista = list()
@@ -153,3 +154,4 @@ class MexPacket:
         self.time2 = int(parts[5])
         # print(self.to_str())
         # print(self.hr, self.timer)
+'''
