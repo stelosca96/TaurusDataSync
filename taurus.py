@@ -2,6 +2,10 @@ from .packet import *
 
 tunnel = Communication()
 
+# TODO: farlo meglio
+DATA = '0'
+SETTING = '1'
+
 
 class Taurus:
     def __init__(self, id, address):
@@ -13,21 +17,17 @@ class Taurus:
         # del server
         tunnel.listener = self
 
-        # memorizzano i dati sottoforma
+        # memorizza i dati sottoforma
         # di pacchetti ricevuti dalla bici
-        self.__data = Packet()
-        self.__settings = Packet()
-
-        # TODO: inserire gli altri pacchetti
-
+        self.__memoize = dict()
 
     @property
     def data(self):
-        return self.__data.decode
+        return self.__memoize.get(DATA).jsonify
 
     @property
     def setting(self):
-        return self.__setting.decode
+        return self.__memoize.get(SETTING).jsonify
 
     # TODO: inserire gli altri pacchetti
 
@@ -35,6 +35,10 @@ class Taurus:
     # TODO: aggiungere la send_sync
     def send(self, packet):
         tunnel.send(self.address, Packet(packet))
+
+    def receive(self, packet):
+        type = packet.content[1]
+        self.__memoize.update({type: packet})
 
     def __str__(self):
         return self.id + ' -- ' + self.address
