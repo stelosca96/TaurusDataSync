@@ -1,9 +1,7 @@
-from digi.xbee.devices import RemoteXBeeDevice
-from digi.xbee.models.address import XBee64BitAddress
-from digi.xbee.devices import XBeeDevice
-
 import json
 
+from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
+from digi.xbee.models.address import XBee64BitAddress
 
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
@@ -14,8 +12,8 @@ BAUD_RATE = 115200
 
 class Communication:
     def __init__(self):
-        self.listener = dict()
-        #self.device = XBeeDevice(PORT, BAUD_RATE)
+        self.__listener = dict()
+        # self.device = XBeeDevice(PORT, BAUD_RATE)
         # self.device.open()
         # self.device.add_data_received_callback(self.receiver)
 
@@ -23,7 +21,7 @@ class Communication:
     @staticmethod
     def send(address, packet):
         self.device.send_data_async(RemoteXBeeDevice(
-            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode())
+            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
 
     @staticmethod
     def send_sync(address, packet):
@@ -31,34 +29,43 @@ class Communication:
         # timeout e non riceve risposta
         # lancia una eccezione
         self.device.send_data(RemoteXBeeDevice(
-            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode())
+            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
 
     @staticmethod
     def send_broadcast(packet):
-        self.device.send_data_broadcast(packet.encode())
+        self.device.send_data_broadcast(packet.encode)
 
     # DIREZIONE: bici --> server
     def receiver(self, packet):
         pass
 
-    def add_listener(self, l):
-        self.listener.update({l.id: l})
+    @property
+    def listener(self):
+        return self.__listener
+
+    @listener.setter
+    def listener(self, l):
+        self.__listener.update({l.id: l})
 
 
 class Packet:
     def __init__(self, content=list()):
-        self.content = self.update(content)
+        self.content = self.__filter(content)
 
-    def encode(self):
-        return ';'.join(map(str, self.content))
-
+    @property
     def decode(self):
         return self.content
 
-    def update(self, new):
-        self.content = new if type(new) is list else [i for i in new.values()]
-        return self.content
+    @property
+    def encode(self):
+        return ';'.join(map(str, self.content))
 
+    @decode.setter
+    # usato come la update()
+    def decode(self, content):
+        self.content = self.__filter(content)
+
+    @property
     def jsonify(self):
         type = self.content[1]
         content = self.content[2:]
@@ -71,6 +78,9 @@ class Packet:
             res[key] = str(content.pop())
 
         return json.dumps(res)
+
+    def __filter(self, data):
+        return data if type(data) is list else [i for i in data.values()]
 
     def __len__(self):
         return len(self.content)

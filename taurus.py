@@ -8,17 +8,28 @@ class Taurus:
         self.address = address
         self.id = id
 
-        # memorizzano i dati
-        # TODO: inserire tutti e 13 i tipi
-        self.mdata = Packet()
-        self.msettings = Packet()
-        tunnel.add_listener(self)
+        # inserisce l'istanza corrente
+        # nei listener dell'antenna
+        # del server
+        tunnel.listener = self
 
+        # memorizzano i dati sottoforma
+        # di pacchetti ricevuti dalla bici
+        self.__data = Packet()
+        self.__settings = Packet()
+
+        # TODO: inserire gli altri pacchetti
+
+
+    @property
     def data(self):
-        return self.mdata.decode()
+        return self.__data.decode
 
+    @property
     def setting(self):
-        return self.msetting.decode()
+        return self.__setting.decode
+
+    # TODO: inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
     # TODO: aggiungere la send_sync
