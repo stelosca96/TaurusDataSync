@@ -1,12 +1,19 @@
 from .packet import *
 
-tunnel = Communication()
-
 # TODO: farlo meglio
 DATA = '0'
 SETTING = '1'
 
 
+# avvio trasmissione xbee
+transmiter = Transmitter()
+
+
+# questa classe istazia l'antenna
+# della bici corrispondente e conserva
+# i dati trasmetti sottoforma di Packet,
+# si occupa anche dell'invio di
+# pacchetti verso l'antenna server
 class Taurus:
     def __init__(self, id, address):
         self.address = address
@@ -15,7 +22,7 @@ class Taurus:
         # inserisce l'istanza corrente
         # nei listener dell'antenna
         # del server
-        tunnel.listener = self
+        transmiter.listener = self
 
         # memorizza i dati sottoforma
         # di pacchetti ricevuti dalla bici
@@ -34,7 +41,7 @@ class Taurus:
     # DIREZIONE: server --> bici
     # TODO: aggiungere la send_sync
     def send(self, packet):
-        tunnel.send(self.address, Packet(packet))
+        transmiter.send(self.address, Packet(packet))
 
     def receive(self, packet):
         type = packet.content[1]

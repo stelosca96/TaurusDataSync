@@ -6,11 +6,13 @@ from digi.xbee.models.address import XBee64BitAddress
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
 
-# TODO: togliere l'immissione esplicita degli
-# indirizzi quando si chiamano le funzioni di send
 
-
-class Communication:
+# questa classe si interfaccia con
+# le funzioni di basso livello
+# dello xbee e si occupa i mandare
+# e ricevere raw_message formati da
+# stringhe del tipo {};{};{};{}
+class Transmitter:
     def __init__(self):
         self.__listener = dict()
         # self.device = XBeeDevice(PORT, BAUD_RATE)
@@ -26,6 +28,9 @@ class Communication:
         self.__listener.update({l.id: l})
 
     # DIREZIONE: server --> bici
+
+    # TODO: togliere l'immissione esplicita degli
+    # indirizzi quando si chiamano le funzioni di send
     @staticmethod
     def send(address, packet):
         self.device.send_data_async(RemoteXBeeDevice(
@@ -50,6 +55,10 @@ class Communication:
         dest.receive(packet)
 
 
+# questa classe crea dei pacchetti
+# contenitori sottoforma di liste
+# e fornisce metodi per facilitare la
+# comunicazione con il frontend
 class Packet:
     def __init__(self, content=list()):
         self.__content = self.__decode(content)
@@ -58,22 +67,21 @@ class Packet:
     def content(self):
         return self.__content
 
-    @property
-    def encode(self):
-        return ';'.join(map(str, self.content))
-
     @content.setter
     def content(self, content):
         self.__content = self.__decode(content)
 
     @property
-    def jsonify(self):
+    def encode(self):
+        return ';'.join(map(str, self.content))
 
+    @property
+    def jsonify(self):
         type = self.content[1]
         content = self.content[2:]
         content.reverse()
 
-        with open('pyxbee/packet.json') as f:
+        with open('pyxbee/packets.json') as f:
             res = json.load(f)[str(type)]
 
         for key, _ in res.items():
