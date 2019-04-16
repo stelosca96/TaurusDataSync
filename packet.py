@@ -91,9 +91,9 @@ class Packet:
     def __decode(self, data):
         # se viene passato un dict o una
         # stringa cruda la trasforma in lista
-        if type(data) is list:
+        if isinstance(data, list):
             res = data
-        elif type(data) is dict:
+        elif isinstance(data, dict):
             res = [i for i in data.values()]
         else:
             res = data.split(';')
