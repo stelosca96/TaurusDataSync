@@ -29,8 +29,6 @@ class Transmitter:
 
     # DIREZIONE: server --> bici
 
-    # TODO: togliere l'immissione esplicita degli
-    # indirizzi quando si chiamano le funzioni di send
     @staticmethod
     def send(address, packet):
         self.device.send_data_async(RemoteXBeeDevice(
@@ -85,7 +83,7 @@ class Packet:
             res = json.load(f)[str(type)]
 
         for key, _ in res.items():
-            res[key] = str(content.pop())
+            res[key] = content.pop()
         return json.dumps(res)
 
     def __decode(self, data):

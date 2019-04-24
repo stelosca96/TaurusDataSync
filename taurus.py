@@ -33,7 +33,7 @@ class Taurus:
         return self.__memoize.get(DATA).jsonify
 
     @property
-    def setting(self):
+    def settings(self):
         return self.__memoize.get(SETTING).jsonify
 
     # TODO: inserire gli altri pacchetti
