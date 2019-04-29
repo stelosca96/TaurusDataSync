@@ -15,9 +15,9 @@ BAUD_RATE = 115200
 class Transmitter:
     def __init__(self):
         self.__listener = dict()
-        # self.device = XBeeDevice(PORT, BAUD_RATE)
-        # self.device.open()
-        # self.device.add_data_received_callback(self.receiver)
+        self.device = XBeeDevice(PORT, BAUD_RATE)
+        self.device.open()
+        self.device.add_data_received_callback(self.receiver)
 
     @property
     def listener(self):
@@ -47,9 +47,10 @@ class Transmitter:
         self.device.send_data_broadcast(packet.encode)
 
     # DIREZIONE: bici --> server
-    def receiver(self, raw):
+    def receiver(self, xbee_message):
+        raw = xbee_message.data.decode()
         packet = Packet(raw)
-        dest = self.listener.get(packet.content[1])
+        dest = self.listener.get(packet.content[0])
         dest.receive(packet)
 
 
