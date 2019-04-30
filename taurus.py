@@ -14,6 +14,9 @@ transmiter = Transmitter()
 # i dati trasmetti sottoforma di Packet,
 # si occupa anche dell'invio di
 # pacchetti verso l'antenna server
+#
+# id --> codice con cui viene identif. nei pacchetti
+# address --> indirizzo dell'antenna
 class Taurus:
     def __init__(self, id, address):
         self.address = address
