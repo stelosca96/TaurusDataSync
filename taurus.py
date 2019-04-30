@@ -1,4 +1,4 @@
-from .packet import *
+from .packet import Packet, Transmitter
 
 # TODO: farlo meglio
 DATA = '0'

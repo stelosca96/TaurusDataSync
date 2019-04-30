@@ -1,2 +1,1 @@
-from .packet import *
-from .taurus import *
+__all__ = ['packet', 'taurus']
