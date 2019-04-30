@@ -1,2 +1,1 @@
-from .taurus import Taurus
-from .communication import Communication
+__all__ = ['packet', 'taurus']
