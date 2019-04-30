@@ -21,7 +21,17 @@
     #11 -> UPDATE SETTINGS REQUEST
     #13 -> PACCHETTO 13
 
-#### FLAG DEI SETTING
+#### CONTENUTO TIPO 0
+
+    "time"
+    "heartrate"
+    "power"
+    "cadence"
+    "speed"
+    "distance"
+    "gear"
+
+#### CONTENUTO TIPO 1
 
 **Non modificabili**
 
