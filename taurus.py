@@ -1,6 +1,6 @@
 from .packet import Packet, Transmitter
 
-# TODO: farlo meglio
+# TODO: Flag dizionario
 DATA = '0'
 SETTING = '1'
 
@@ -39,10 +39,10 @@ class Taurus:
     def settings(self):
         return self.__memoize.get(SETTING).jsonify
 
-    # TODO: inserire gli altri pacchetti
+    # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
-    # TODO: aggiungere la send_sync
+    # TODO: Aggiungere la send_sync
     def send(self, packet):
         transmiter.send(self.address, Packet(packet))
 

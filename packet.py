@@ -102,5 +102,4 @@ class Packet:
         return len(self.content)
 
     def __str__(self):
-        # TODO: farlo meglio ?
         return str(self.content)
