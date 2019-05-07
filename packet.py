@@ -28,19 +28,22 @@ class Transmitter:
         self.__listener.update({l.id: l})
 
     # DIREZIONE: server --> bici
-
     @staticmethod
     def send(address, packet):
         self.device.send_data_async(RemoteXBeeDevice(
             self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
 
+    # DIREZIONE: server --> bici
     @staticmethod
     def send_sync(address, packet):
         # aspetta l'ack, se scatta il
         # timeout e non riceve risposta
         # lancia una eccezione
-        self.device.send_data(RemoteXBeeDevice(
-            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+        try:
+            self.device.send_data(RemoteXBeeDevice(
+                self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+        except TimeoutException:
+            print('>> ACK send_sync non ricevuto')
 
     @staticmethod
     def send_broadcast(packet):

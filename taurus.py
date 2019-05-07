@@ -44,7 +44,7 @@ class Taurus:
     # DIREZIONE: server --> bici
     # TODO: Aggiungere la send_sync
     def send(self, packet):
-        transmiter.send(self.address, Packet(packet))
+        transmiter.send_sync(self.address, Packet(packet))
 
     def receive(self, packet):
         type = packet.content[1]
