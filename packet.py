@@ -27,6 +27,10 @@ class Transmitter:
     def listener(self, l):
         self.__listener.update({l.id: l})
 
+    def __del__(self):
+        if self.device is not None and self.device.is_open():
+            self.device.close()
+
     # DIREZIONE: server --> bici
     @staticmethod
     def send(address, packet):

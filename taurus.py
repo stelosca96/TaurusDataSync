@@ -4,7 +4,6 @@ from .packet import Packet, Transmitter
 DATA = '0'
 SETTING = '1'
 
-
 # avvio trasmissione xbee
 transmiter = Transmitter()
 
@@ -42,7 +41,6 @@ class Taurus:
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
-    # TODO: Aggiungere la send_sync
     def send(self, packet):
         transmiter.send_sync(self.address, Packet(packet))
 
