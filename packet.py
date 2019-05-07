@@ -37,7 +37,6 @@ class Transmitter:
         self.device.send_data_async(RemoteXBeeDevice(
             self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
 
-    # DIREZIONE: server --> bici
     @staticmethod
     def send_sync(address, packet):
         # aspetta l'ack, se scatta il
