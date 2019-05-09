@@ -54,11 +54,13 @@ class Transmitter:
 
     # DIREZIONE: bici --> server
     def receiver(self, xbee_message):
-        raw = xbee_message.data.decode()
-        packet = Packet(raw)
-        print(packet)
-        dest = self.listener.get(packet.content[0])
-        dest.receive(packet)
+        # per gestire il pacchetto vuoto
+        if xbee_message != '':
+            raw = xbee_message.data.decode()
+            packet = Packet(raw)
+            print(packet)
+            dest = self.listener.get(packet.content[0])
+            dest.receive(packet)
 
 
 # questa classe crea dei pacchetti
