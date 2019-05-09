@@ -1,4 +1,4 @@
-from .packet import Packet, Transmitter
+from .base import Packet, Transmitter
 
 # TODO: Flag dizionario
 DATA = '0'
@@ -32,7 +32,8 @@ class Taurus:
 
     @property
     def data(self):
-        return self.__memoize.get(DATA).jsonify
+        data = self.__memoize.get(DATA).jsonify
+        return data if data != None else {}
 
     @property
     def settings(self):
@@ -42,7 +43,7 @@ class Taurus:
 
     # DIREZIONE: server --> bici
     def send(self, packet):
-        transmiter.send_sync(self.address, Packet(packet))
+        transmiter.send(self.address, Packet(packet))
 
     def receive(self, packet):
         type = packet.content[1]
