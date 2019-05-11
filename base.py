@@ -15,9 +15,9 @@ BAUD_RATE = 115200
 class Transmitter:
     def __init__(self):
         self.__listener = dict()
-        # self.device = XBeeDevice(PORT, BAUD_RATE)
-        # self.device.open()
-        # self.device.add_data_received_callback(self.receiver)
+        self.device = XBeeDevice(PORT, BAUD_RATE)
+        self.device.open()
+        self.device.add_data_received_callback(self.receiver)
 
     @property
     def listener(self):

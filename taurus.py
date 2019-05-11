@@ -32,7 +32,7 @@ class Taurus:
 
     @property
     def data(self):
-        data = self.__memoize.get(COSNT.DATA).jsonify
+        data = self.__memoize.get(CONST.DATA).jsonify
         return data if data != None else {}
 
     @property
