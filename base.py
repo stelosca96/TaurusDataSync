@@ -15,9 +15,9 @@ BAUD_RATE = 115200
 class Transmitter:
     def __init__(self):
         self.__listener = dict()
-        self.device = XBeeDevice(PORT, BAUD_RATE)
-        self.device.open()
-        self.device.add_data_received_callback(self.receiver)
+        # self.device = XBeeDevice(PORT, BAUD_RATE)
+        # self.device.open()
+        # self.device.add_data_received_callback(self.receiver)
 
     @property
     def listener(self):
@@ -112,3 +112,16 @@ class Packet:
 
     def __str__(self):
         return str(self.content)
+
+
+# NOTE: ogni nuovo pacchetto
+# che deve essere mandato al
+# frontend deve avere la sua costante
+class Const:
+    @property
+    def DATA(self):
+        return '0'
+
+    @property
+    def SETTING(self):
+        return '1'

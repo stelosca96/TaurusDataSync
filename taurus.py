@@ -1,12 +1,10 @@
-from .base import Packet, Transmitter
-
-# TODO: Flag dizionario
-DATA = '0'
-SETTING = '1'
+from .base import Const, Packet, Transmitter
 
 # avvio trasmissione xbee
 transmiter = Transmitter()
 
+# Constanti per il dizionario
+CONST = Const()
 
 # questa classe istazia l'antenna
 # della bici corrispondente e conserva
@@ -16,6 +14,8 @@ transmiter = Transmitter()
 #
 # id --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna
+
+
 class Taurus:
     def __init__(self, id, address):
         self.address = address
@@ -32,12 +32,13 @@ class Taurus:
 
     @property
     def data(self):
-        data = self.__memoize.get(DATA).jsonify
+        data = self.__memoize.get(COSNT.DATA).jsonify
         return data if data != None else {}
 
     @property
     def settings(self):
-        return self.__memoize.get(SETTING).jsonify
+        settings = self.__memoize.get(CONST.SETTING).jsonify
+        return settings if settings != None else {}
 
     # TODO: Inserire gli altri pacchetti
 
