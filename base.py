@@ -34,8 +34,11 @@ class Transmitter:
     # DIREZIONE: server --> bici
     @staticmethod
     def send(address, packet):
-        self.device.send_data_async(RemoteXBeeDevice(
-            self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+        try:
+            self.device.send_data_async(RemoteXBeeDevice(
+                self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+        except TimeoutException:
+            print('>> Dispositivo ({}) non trovato'.format(address))
 
     @staticmethod
     def send_sync(address, packet):
