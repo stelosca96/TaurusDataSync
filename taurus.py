@@ -32,13 +32,13 @@ class Taurus:
 
     @property
     def data(self):
-        data = self.__memoize.get(CONST.DATA).jsonify
-        return data if data != None else {}
+        data = self.__memoize.get(CONST.DATA)
+        return data.jsonify if data != None else {}
 
     @property
     def settings(self):
-        settings = self.__memoize.get(CONST.SETTING).jsonify
-        return settings if settings != None else {}
+        settings = self.__memoize.get(CONST.SETTING)
+        return settings.jsonify if settings != None else {}
 
     # TODO: Inserire gli altri pacchetti
 
