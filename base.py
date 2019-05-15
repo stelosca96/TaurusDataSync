@@ -1,6 +1,7 @@
 import json
 
 from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
+from digi.xbee.exception import InvalidOperatingModeException, TimeoutException
 from digi.xbee.models.address import XBee64BitAddress
 
 PORT = "/dev/ttyUSB0"
@@ -15,9 +16,12 @@ BAUD_RATE = 115200
 class Transmitter:
     def __init__(self):
         self.__listener = dict()
-        self.device = XBeeDevice(PORT, BAUD_RATE)
-        self.device.open()
-        self.device.add_data_received_callback(self.receiver)
+        try:
+            self.device = XBeeDevice(PORT, BAUD_RATE)
+            self.device.open()
+            self.device.add_data_received_callback(self.receiver)
+        except InvalidOperatingModeException:
+            print('>> Nessun dispositivo trovato')
 
     @property
     def listener(self):
