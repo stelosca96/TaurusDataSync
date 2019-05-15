@@ -1,7 +1,8 @@
 import json
 
 from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
-from digi.xbee.exception import InvalidOperatingModeException, TimeoutException
+from digi.xbee.exception import (InvalidOperatingModeException,
+                                 InvalidPacketException, TimeoutException)
 from digi.xbee.models.address import XBee64BitAddress
 
 PORT = "/dev/ttyUSB0"
@@ -41,7 +42,7 @@ class Transmitter:
         try:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
-        except TimeoutException:
+        except (TimeoutException, InvalidPacketException):
             print('>> Dispositivo ({}) non trovato'.format(address))
 
     @staticmethod
@@ -52,7 +53,7 @@ class Transmitter:
         try:
             self.device.send_data(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
-        except TimeoutException:
+        except (TimeoutException, InvalidPacketException):
             print('>> ACK send_sync non ricevuto')
 
     @staticmethod
