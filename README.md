@@ -23,12 +23,12 @@
 
 #### CONTENUTO TIPO 0
 
-    "time"
     "heartrate"
     "power"
     "cadence"
-    "speed"
     "distance"
+    "speed"
+    "time"
     "gear"
 
 #### CONTENUTO TIPO 1
