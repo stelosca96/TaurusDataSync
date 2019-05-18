@@ -4,6 +4,7 @@ from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
 from digi.xbee.exception import (InvalidOperatingModeException,
                                  InvalidPacketException, TimeoutException)
 from digi.xbee.models.address import XBee64BitAddress
+from serial.serialutil import SerialException
 
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
@@ -21,8 +22,8 @@ class Transmitter:
             self.device = XBeeDevice(PORT, BAUD_RATE)
             self.device.open()
             self.device.add_data_received_callback(self.receiver)
-        except InvalidOperatingModeException:
-            print('>> Nessun dispositivo trovato')
+        except (InvalidOperatingModeException, SerialException):
+            print('>> Nessun dispositivo trovato\n')
 
     @property
     def listener(self):
@@ -43,7 +44,7 @@ class Transmitter:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
-            print('>> Dispositivo ({}) non trovato'.format(address))
+            print('>> Dispositivo ({}) non trovato\n'.format(address))
 
     @staticmethod
     def send_sync(address, packet):
@@ -54,7 +55,7 @@ class Transmitter:
             self.device.send_data(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
-            print('>> ACK send_sync non ricevuto')
+            print('>> ACK send_sync non ricevuto\n')
 
     @staticmethod
     def send_broadcast(packet):

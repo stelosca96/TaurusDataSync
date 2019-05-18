@@ -6,6 +6,7 @@ transmiter = Transmitter()
 # Constanti per il dizionario
 CONST = Const()
 
+
 # questa classe istazia l'antenna
 # della bici corrispondente e conserva
 # i dati trasmetti sottoforma di Packet,
@@ -14,8 +15,6 @@ CONST = Const()
 #
 # id --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna
-
-
 class Taurus:
     def __init__(self, id, address):
         self.address = address
