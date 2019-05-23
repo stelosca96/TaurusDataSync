@@ -1,5 +1,7 @@
 {
   "0": {
+    "dest": "",
+    "type": "",
     "heartrate": "",
     "power": "",
     "cadence": "",
@@ -9,6 +11,8 @@
     "gear": ""
   },
   "1": {
+    "dest": "",
+    "type": "",
     "log": "",
     "video": "",
     "ant": "",
@@ -26,19 +30,37 @@
     "calibration_value": "",
     "video_record": "",
     "antilope": "",
-    "update":""
+    "update": ""
   },
   "3": {
+    "dest": "",
+    "type": "",
     "valore": ""
   },
   "4": {
+    "dest": "",
+    "type": "",
     "valore": ""
   },
-  "5": {},
-  "6": {},
+  "5": {
+    "dest": "",
+    "type": ""
+  },
+  "6": {
+    "dest": "",
+    "type": ""
+  },
   "9": {
+    "dest": "",
+    "type": "",
     "valore": ""
   },
-  "11": {},
-  "13": {}
+  "11": {
+    "dest": "",
+    "type": ""
+  },
+  "13": {
+    "dest": "",
+    "type": ""
+  }
 }

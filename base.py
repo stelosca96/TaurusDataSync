@@ -23,7 +23,7 @@ class Transmitter:
             self.device.open()
             self.device.add_data_received_callback(self.receiver)
         except (InvalidOperatingModeException, SerialException):
-            print('>> Nessun dispositivo trovato\n')
+            print('>> Nessuna antenna trovata\n')
 
     @property
     def listener(self):
@@ -95,7 +95,7 @@ class Packet:
     @property
     def jsonify(self):
         type = self.content[1]
-        content = self.content[2:]
+        content = self.content[:]
         content.reverse()
 
         with open('pyxbee/packets.json') as f:
