@@ -1,7 +1,7 @@
 from .base import Const, Packet, Transmitter
 
 # avvio trasmissione xbee
-transmiter = Transmitter()
+transmitter = Transmitter()
 
 # Constanti per il dizionario
 CONST = Const()
@@ -23,7 +23,7 @@ class Taurus:
         # inserisce l'istanza corrente
         # nei listener dell'antenna
         # del server
-        transmiter.listener = self
+        transmitter.listener = self
 
         # memorizza i dati sottoforma
         # di pacchetti ricevuti dalla bici
@@ -43,7 +43,7 @@ class Taurus:
 
     # DIREZIONE: server --> bici
     def send(self, packet):
-        transmiter.send(self.address, Packet(packet))
+        transmitter.send(self.address, Packet(packet))
 
     def receive(self, packet):
         type = packet.content[1]
