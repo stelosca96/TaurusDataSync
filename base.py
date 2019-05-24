@@ -10,6 +10,19 @@ PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
 
 
+# NOTE: ogni nuovo pacchetto
+# che deve essere mandato al
+# frontend deve avere la sua costante
+class Const:
+    @property
+    def DATA(self):
+        return '0'
+
+    @property
+    def SETTING(self):
+        return '1'
+
+
 # questa classe si interfaccia con
 # le funzioni di basso livello
 # dello xbee e si occupa i mandare
@@ -123,14 +136,49 @@ class Packet:
         return str(self.content)
 
 
-# NOTE: ogni nuovo pacchetto
-# che deve essere mandato al
-# frontend deve avere la sua costante
-class Const:
-    @property
-    def DATA(self):
-        return '0'
+# questa classe istazia l'antenna
+# della bici corrispondente e conserva
+# i dati trasmetti sottoforma di Packet,
+# si occupa anche dell'invio di
+# pacchetti verso l'antenna server
+#
+# id --> codice con cui viene identif. nei pacchetti
+# address --> indirizzo dell'antenna
+class Taurus:
+    def __init__(self, id, address, transmitter):
+        self.address = address
+        self.id = id
+
+        # inserisce l'istanza corrente
+        # nei listener dell'antenna del server
+        transmitter.listener = self
+
+        # Constanti per il dizionario dei pacchetti
+        CONST = Const()
+
+        # memorizza i dati sottoforma
+        # di pacchetti ricevuti dalla bici
+        self.__memoize = dict()
 
     @property
-    def SETTING(self):
-        return '1'
+    def data(self):
+        data = self.__memoize.get(CONST.DATA)
+        return data.jsonify if data != None else {}
+
+    @property
+    def settings(self):
+        settings = self.__memoize.get(CONST.SETTING)
+        return settings.jsonify if settings != None else {}
+
+    # TODO: Inserire gli altri pacchetti
+
+    # DIREZIONE: server --> bici
+    def send(self, packet):
+        transmitter.send(self.address, Packet(packet))
+
+    def receive(self, packet):
+        type = packet.content[1]
+        self.__memoize.update({type: packet})
+
+    def __str__(self):
+        return self.id + ' -- ' + self.address
