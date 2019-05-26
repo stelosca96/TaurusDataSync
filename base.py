@@ -28,7 +28,7 @@ class Const:
 # dello xbee e si occupa i mandare
 # e ricevere raw_message formati da
 # stringhe del tipo {};{};{};{}
-class Transmitter:
+class Server:
     def __init__(self):
         self.__listener = dict()
         try:
