@@ -31,12 +31,7 @@ class Const:
 class Server:
     def __init__(self):
         self.__listener = dict()
-        try:
-            self.device = XBeeDevice(PORT, BAUD_RATE)
-            self.device.open()
-            self.device.add_data_received_callback(self.receiver)
-        except (InvalidOperatingModeException, SerialException):
-            print('>> Nessuna antenna trovata\n')
+        self.device = self.__open_device(PORT, BAUD_RATE)
 
     @property
     def listener(self):
@@ -46,21 +41,15 @@ class Server:
     def listener(self, l):
         self.__listener.update({l.id: l})
 
-    def __del__(self):
-        if self.device is not None and self.device.is_open():
-            self.device.close()
-
     # DIREZIONE: server --> bici
-    @staticmethod
-    def send(address, packet):
+    def send(self, address, packet):
         try:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
             print('>> Dispositivo ({}) non trovato\n'.format(address))
 
-    @staticmethod
-    def send_sync(address, packet):
+    def send_sync(self, address, packet):
         # aspetta l'ack, se scatta il
         # timeout e non riceve risposta
         # lancia una eccezione
@@ -70,8 +59,7 @@ class Server:
         except (TimeoutException, InvalidPacketException):
             print('>> ACK send_sync non ricevuto\n')
 
-    @staticmethod
-    def send_broadcast(packet):
+    def send_broadcast(self, packet):
         self.device.send_data_broadcast(packet.encode)
 
     # DIREZIONE: bici --> server
@@ -83,6 +71,20 @@ class Server:
             print(packet)
             dest = self.listener.get(packet.content[0])
             dest.receive(packet)
+
+    def __open_device(self, port, baud_rate):
+        device = XBeeDevice(port, baud_rate)
+        try:
+            device.open()
+            device.add_data_received_callback(self.receiver)
+            print('>> Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
+            return device
+        except (InvalidOperatingModeException, SerialException):
+            print('>> Nessuna antenna trovata\n')
+
+    def __del__(self):
+        if self.device is not None and self.device.is_open():
+            self.device.close()
 
 
 # questa classe crea dei pacchetti
@@ -157,7 +159,7 @@ class Taurus:
         CONST = Const()
 
         # memorizza i dati sottoforma
-        # di pacchetti ricevuti dalla bici
+        # di pacchetti ricevuti
         self.__memoize = dict()
 
     @property
