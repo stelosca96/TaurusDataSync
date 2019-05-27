@@ -19,27 +19,18 @@ class Const:
         return '0'
 
     @property
-    def SETTING(self):
+    def STATE(self):
         return '1'
 
 
-# questa classe si interfaccia con
+# questa classe si interfaccia in con
 # le funzioni di basso livello
 # dello xbee e si occupa i mandare
 # e ricevere raw_message formati da
 # stringhe del tipo {};{};{};{}
-class Server:
+class _Transmitter:
     def __init__(self):
-        self.__listener = dict()
         self.device = self.__open_device(PORT, BAUD_RATE)
-
-    @property
-    def listener(self):
-        return self.__listener
-
-    @listener.setter
-    def listener(self, l):
-        self.__listener.update({l.id: l})
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
@@ -52,7 +43,7 @@ class Server:
     def send_sync(self, address, packet):
         # aspetta l'ack, se scatta il
         # timeout e non riceve risposta
-        # lancia una eccezione
+        # lancia l'eccezione
         try:
             self.device.send_data(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
@@ -64,6 +55,39 @@ class Server:
 
     # DIREZIONE: bici --> server
     def receiver(self, xbee_message):
+        pass
+
+    def __open_device(self, port, baud_rate):
+        device = XBeeDevice(port, baud_rate)
+        try:
+            device.open()
+            print('>> Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
+            self.device.add_data_received_callback(self.receiver)
+            return device
+        except (InvalidOperatingModeException, SerialException):
+            print('>> Nessuna antenna trovata\n')
+
+    def __del__(self):
+        if self.device is not None and self.device.is_open():
+            self.device.close()
+
+
+# SERVER mode del transmitter
+class Server(_Transmitter):
+    def __init__(self):
+        super().__init__()
+        self.__listener = dict()
+
+    @property
+    def listener(self):
+        return self.__listener
+
+    @listener.setter
+    def listener(self, l):
+        self.__listener.update({l.id: l})
+
+    # DIREZIONE: bici --> server
+    def receiver(self, xbee_message):
         # per gestire il pacchetto vuoto
         if xbee_message != '':
             raw = xbee_message.data.decode()
@@ -72,19 +96,17 @@ class Server:
             dest = self.listener.get(packet.content[0])
             dest.receive(packet)
 
-    def __open_device(self, port, baud_rate):
-        device = XBeeDevice(port, baud_rate)
-        try:
-            device.open()
-            device.add_data_received_callback(self.receiver)
-            print('>> Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
-            return device
-        except (InvalidOperatingModeException, SerialException):
-            print('>> Nessuna antenna trovata\n')
 
-    def __del__(self):
-        if self.device is not None and self.device.is_open():
-            self.device.close()
+# CLIENT mode del transmitter
+class Client(_Transmitter):
+    def __init__(self):
+        super().__init__()
+
+    def receiver(self, xbee_message):
+        # quando riceve un pacchetto
+        # dal server aggiorna i valori
+        # nelle opportune classi della bici
+        pass
 
 
 # questa classe crea dei pacchetti
@@ -138,7 +160,7 @@ class Packet:
         return str(self.content)
 
 
-# questa classe istazia l'antenna
+# questa classe instazia l'antenna
 # della bici corrispondente e conserva
 # i dati trasmetti sottoforma di Packet,
 # si occupa anche dell'invio di
@@ -146,14 +168,15 @@ class Packet:
 #
 # id --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna
+# transmitter --> instanza dell'antenna server
 class Taurus:
-    def __init__(self, id, address, transmitter):
+    def __init__(self, id, address, server):
         self.address = address
         self.id = id
 
         # inserisce l'istanza corrente
         # nei listener dell'antenna del server
-        transmitter.listener = self
+        server.listener = self
 
         # Constanti per il dizionario dei pacchetti
         CONST = Const()
@@ -168,15 +191,15 @@ class Taurus:
         return data.jsonify if data != None else {}
 
     @property
-    def settings(self):
-        settings = self.__memoize.get(CONST.SETTING)
-        return settings.jsonify if settings != None else {}
+    def state(self):
+        state = self.__memoize.get(CONST.STATE)
+        return state.jsonify if state != None else {}
 
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
     def send(self, packet):
-        transmitter.send(self.address, Packet(packet))
+        server.send(self.address, Packet(packet))
 
     def receive(self, packet):
         type = packet.content[1]
