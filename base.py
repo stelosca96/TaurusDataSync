@@ -1,4 +1,5 @@
 import json
+import logging
 
 from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
 from digi.xbee.exception import (InvalidOperatingModeException,
@@ -6,13 +7,15 @@ from digi.xbee.exception import (InvalidOperatingModeException,
 from digi.xbee.models.address import XBee64BitAddress
 from serial.serialutil import SerialException
 
+log = logging.getLogger(__name__)
+
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
-
-
 # NOTE: ogni nuovo pacchetto
 # che deve essere mandato al
 # frontend deve avere la sua costante
+
+
 class Const:
     @property
     def DATA(self):
@@ -47,7 +50,7 @@ class Server:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
-            print('>> Dispositivo ({}) non trovato\n'.format(address))
+            log.error('Dispositivo ({}) non trovato\n'.format(address))
 
     def send_sync(self, address, packet):
         # aspetta l'ack, se scatta il
@@ -57,7 +60,7 @@ class Server:
             self.device.send_data(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
-            print('>> ACK send_sync non ricevuto\n')
+            log.error('ACK send_sync non ricevuto\n')
 
     def send_broadcast(self, packet):
         self.device.send_data_broadcast(packet.encode)
@@ -68,7 +71,7 @@ class Server:
         if xbee_message != '':
             raw = xbee_message.data.decode()
             packet = Packet(raw)
-            print(packet)
+            log.debug('Received packet: {}'.format(packet))
             dest = self.listener.get(packet.content[0])
             dest.receive(packet)
 
@@ -77,13 +80,14 @@ class Server:
         try:
             device.open()
             device.add_data_received_callback(self.receiver)
-            print('>> Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
+            log.info('Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
             return device
         except (InvalidOperatingModeException, SerialException):
-            print('>> Nessuna antenna trovata\n')
+            log.error('Nessuna antenna trovata')
 
     def __del__(self):
         if self.device is not None and self.device.is_open():
+            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
             self.device.close()
 
 
