@@ -166,16 +166,17 @@ class Taurus:
         # di pacchetti ricevuti
         self.__memoize = dict()
 
-        # clolleziona i pacchetti mandati al frontend
+        # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
         # soluzione di continuita'
-        self.data_history = list()
+        self.__history = list()
 
     @property
     def data(self):
         data = self.__memoize.get(CONST.DATA)
-        self.data_history.append(data)
-        return data.jsonify if data != None else {}
+        jdata = data.jsonify if data != None else {}
+        self.__history.append(jdata)
+        return jdata
 
     @property
     def settings(self):
@@ -184,7 +185,7 @@ class Taurus:
 
     @property
     def history(self):
-        return self.data_history
+        return self.__history
 
     # TODO: Inserire gli altri pacchetti
 
