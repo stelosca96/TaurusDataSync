@@ -42,7 +42,7 @@ class Server:
 
     @listener.setter
     def listener(self, l):
-        self.__listener.update({l.id: l})
+        self.__listener.update({l.code: l})
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
@@ -96,6 +96,7 @@ class Server:
 # e fornisce metodi per facilitare la
 # comunicazione con il frontend
 class Packet:
+    # TODO: Tuple al posto di liste
     def __init__(self, content=list()):
         self.__content = self.__decode(content)
 
@@ -113,18 +114,19 @@ class Packet:
 
     @property
     def jsonify(self):
-        type = self.content[1]
+        tipo = self.content[1]
         content = self.content[:]
         content.reverse()
 
         with open('pyxbee/packets.json') as f:
-            res = json.load(f)[str(type)]
+            res = json.load(f)[str(tipo)]
 
         for key, _ in res.items():
             res[key] = content.pop()
         return json.dumps(res)
 
-    def __decode(self, data):
+    @classmethod
+    def __decode(cls, data):
         # se viene passato un dict o una
         # stringa cruda la trasforma in lista
         if isinstance(data, list):
@@ -151,16 +153,17 @@ class Packet:
 # id --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna
 class Taurus:
-    def __init__(self, id, address, transmitter):
+    def __init__(self, code, address, transmitter):
         self.address = address
-        self.id = id
+        self.code = code
+        self.transmitter = transmitter
 
         # inserisce l'istanza corrente
         # nei listener dell'antenna del server
-        transmitter.listener = self
+        self.transmitter.listener = self
 
         # Constanti per il dizionario dei pacchetti
-        CONST = Const()
+        self.CONST = Const()
 
         # memorizza i dati sottoforma
         # di pacchetti ricevuti
@@ -173,14 +176,14 @@ class Taurus:
 
     @property
     def data(self):
-        data = self.__memoize.get(CONST.DATA)
+        data = self.__memoize.get(self.CONST.DATA)
         jdata = data.jsonify if data != None else {}
         self.__history.append(jdata)
         return jdata
 
     @property
     def settings(self):
-        settings = self.__memoize.get(CONST.SETTING)
+        settings = self.__memoize.get(self.CONST.SETTING)
         return settings.jsonify if settings != None else {}
 
     @property
@@ -191,11 +194,11 @@ class Taurus:
 
     # DIREZIONE: server --> bici
     def send(self, packet):
-        transmitter.send(self.address, Packet(packet))
+        self.transmitter.send(self.address, Packet(packet))
 
     def receive(self, packet):
-        type = packet.content[1]
-        self.__memoize.update({type: packet})
+        tipo = packet.content[1]
+        self.__memoize.update({tipo: packet})
 
     def __str__(self):
-        return self.id + ' -- ' + self.address
+        return self.code + ' -- ' + self.address
