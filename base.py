@@ -96,8 +96,7 @@ class Server:
 # e fornisce metodi per facilitare la
 # comunicazione con il frontend
 class Packet:
-    # TODO: Tuple al posto di liste
-    def __init__(self, content=list()):
+    def __init__(self, content=tuple()):
         self.__content = self.__decode(content)
 
     @property
@@ -115,7 +114,7 @@ class Packet:
     @property
     def jsonify(self):
         tipo = self.content[1]
-        content = self.content[:]
+        content = list(self.content[:])
         content.reverse()
 
         with open('pyxbee/packets.json') as f:
@@ -127,15 +126,15 @@ class Packet:
 
     @classmethod
     def __decode(cls, data):
-        # se viene passato un dict o una
-        # stringa cruda la trasforma in lista
-        if isinstance(data, list):
+        # se viene passato un dict, una lista o una
+        # stringa cruda la trasforma in tupla
+        if isinstance(data, (list, tuple)):
             res = data
         elif isinstance(data, dict):
             res = [i for i in data.values()]
         else:
             res = data.split(';')
-        return res
+        return tuple(res)
 
     def __len__(self):
         return len(self.content)
