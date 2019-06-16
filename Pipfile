@@ -7,7 +7,6 @@ verify_ssl = true
 
 [packages]
 digi-xbee = "*"
-pyserial = "*"
 
 [requires]
 python_version = "3.6"
