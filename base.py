@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
 
+
 # NOTE: ogni nuovo pacchetto
 # che deve essere mandato al
 # frontend deve avere la sua costante
@@ -57,7 +58,14 @@ class _Transmitter:
 
     # DIREZIONE: bici --> server
     def receiver(self, xbee_message):
-        # Viene richiamato nelle classi figlio
+        if xbee_message != '':
+            raw = xbee_message.data.decode()
+            packet = Packet(raw)
+            log.debug('Received packet: {}'.format(packet))
+            self.manage_packet(packet)
+
+    def manage_packet(self, packet):
+        # Viene richiamata nelle classi figlio
         pass
 
     def __open_device(self, port, baud_rate):
@@ -91,26 +99,27 @@ class Server(_Transmitter):
         self.__listener.update({l.code: l})
 
     # DIREZIONE: bici --> server
-    def receiver(self, xbee_message):
-        # per gestire il pacchetto vuoto
-        if xbee_message != '':
-            raw = xbee_message.data.decode()
-            packet = Packet(raw)
-            log.debug('Received packet: {}'.format(packet))
-            dest = self.listener.get(packet.content[0])
-            dest.receive(packet)
+    def manage_packet(self, packet):
+        dest = self.listener.get(packet.content[0])
+        dest.receive(packet)
 
 
 # CLIENT mode del transmitter
 class Client(_Transmitter):
     def __init__(self):
         super().__init__()
+        self.__bike = None
 
-    def receiver(self, xbee_message):
-        # quando riceve un pacchetto
-        # dal server aggiorna i valori
-        # nelle opportune classi della bici
-        pass
+    @property
+    def bike(self):
+        return self.__bike
+
+    @bike.setter
+    def bike(self, b):
+        self.__bike = b
+
+    def manage_packet(self, packet):
+        self.bike.receive(packet)
 
 
 # questa classe crea dei pacchetti
@@ -167,7 +176,7 @@ class Packet:
 
 # questa classe instazia l'antenna
 # della bici corrispondente e conserva
-# i dati trasmetti sottoforma di Packet,
+# i dati trasmessi sottoforma di Packet,
 # si occupa anche dell'invio di
 # pacchetti verso l'antenna server
 #
@@ -176,6 +185,7 @@ class Packet:
 # transmitter --> instanza dell'antenna server
 class Taurus:
     def __init__(self, code, address, server):
+        # indirizzo dell'antenna della bici
         self.address = address
         self.code = code
         self.transmitter = server
@@ -187,14 +197,17 @@ class Taurus:
         # Constanti per il dizionario dei pacchetti
         self.CONST = Const()
 
-        # memorizza i dati sottoforma
-        # di pacchetti ricevuti
+        # memorizza i pacchetti ricevuti
         self.__memoize = dict()
 
         # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
         # soluzione di continuita'
         self.__history = list()
+
+    @property
+    def history(self):
+        return self.__history
 
     @property
     def data(self):
@@ -208,19 +221,41 @@ class Taurus:
         state = self.__memoize.get(self.CONST.STATE)
         return state.jsonify if state != None else {}
 
-    @property
-    def history(self):
-        return self.__history
-
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
     def send(self, packet):
         self.transmitter.send(self.address, Packet(packet))
 
+    # DIREZIONE: bici --> server
     def receive(self, packet):
         tipo = packet.content[1]
         self.__memoize.update({tipo: packet})
 
     def __str__(self):
         return self.code + ' -- ' + self.address
+
+
+class Bike:
+    def __init__(self, address, client, sensors):
+        # indirizzo dell'antenna del server
+        self.address = address
+        self.transmitter = client
+
+        # memorizza le instanze dei valori utili
+        self.sensors = sensors
+
+        # inserisce l'instanza corrente
+        # come client dell'antenna
+        self.transmitter.bike = self
+
+        # Constanti per il dizionario dei pacchetti
+        self.CONST = Const()
+
+    # DIREZIONE: bici --> server
+    def send(self, packet):
+        self.transmitter.send(self.address, Packet(packet))
+
+    # DIREZIONE: server --> bici
+    def receive(self, packet):
+        pass

@@ -1,4 +1,4 @@
-### Legenda
+### Legenda (non aggiornata)
 
 #### CAMPI PACCHETT0
 
