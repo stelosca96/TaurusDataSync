@@ -6,6 +6,8 @@ from digi.xbee.exception import (InvalidOperatingModeException,
                                  InvalidPacketException, TimeoutException)
 from digi.xbee.models.address import XBee64BitAddress
 from serial.serialutil import SerialException
+from abc import abstractmethod
+
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +36,10 @@ class Const:
 class _Transmitter:
     def __init__(self):
         self.device = self.__open_device(PORT, BAUD_RATE)
+
+    @property
+    def address(self):
+        return self.device.get_64bit_addr()
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
@@ -64,8 +70,8 @@ class _Transmitter:
             log.debug('Received packet: {}'.format(packet))
             self.manage_packet(packet)
 
+    @abstractmethod
     def manage_packet(self, packet):
-        # Viene richiamata nelle classi figlio
         pass
 
     def __open_device(self, port, baud_rate):
@@ -73,7 +79,7 @@ class _Transmitter:
         try:
             device.open()
             device.add_data_received_callback(self.receiver)
-            log.info('Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
+            log.info('Device ({}) connected\n'.format(device.get_64bit_addr()))
             return device
         except (InvalidOperatingModeException, SerialException):
             log.error('Nessuna antenna trovata')
@@ -118,6 +124,7 @@ class Client(_Transmitter):
     def bike(self, b):
         self.__bike = b
 
+    # DIREZIONE: server --> bici
     def manage_packet(self, packet):
         self.bike.receive(packet)
 
@@ -174,31 +181,74 @@ class Packet:
         return str(self.content)
 
 
-# questa classe instazia l'antenna
-# della bici corrispondente e conserva
-# i dati trasmessi sottoforma di Packet,
-# si occupa anche dell'invio di
-# pacchetti verso l'antenna server
+# questa classe prende instaza dell'antenna in
+# modalita' CLIENT, conserva i pacchetti 
+# ricevuti in __memoize e si occupa 
+# dell'invio di pacchetti verso il SERVER (marta)
 #
-# id --> codice con cui viene identif. nei pacchetti
-# address --> indirizzo dell'antenna
-# transmitter --> instanza dell'antenna server
-class Taurus:
-    def __init__(self, code, address, server):
-        # indirizzo dell'antenna della bici
+# code --> codice con cui viene identif. nei pacchetti
+# address --> indirizzo dell'antenna server
+# client --> instanza dell'antenna client
+class Bike:
+    def __init__(self, code, address, client, sensors):
         self.address = address
         self.code = code
-        self.transmitter = server
+        self.transmitter = client
 
-        # inserisce l'istanza corrente
-        # nei listener dell'antenna del server
-        self.transmitter.listener = self
+        # memorizza le instanze dei valori utili
+        self.sensors = sensors
+
+        # inserisce l'instanza corrente
+        # come client dell'antenna
+        self.transmitter.bike = self
 
         # Constanti per il dizionario dei pacchetti
         self.CONST = Const()
 
         # memorizza i pacchetti ricevuti
         self.__memoize = dict()
+
+    @property
+    def data(self):
+        pass
+
+    @property
+    def state(self):
+        pass
+
+    # TODO: Inserire gli altri pacchetti
+
+    # DIREZIONE: server --> bici
+    def send(self, packet):
+        self.transmitter.send(self.address, Packet(packet))
+
+    # DIREZIONE: server --> bici
+    @abstractmethod
+    def receive(self, packet):
+        # TODO: mandare un segnale al main
+        # per il pacchetto ricevuto
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        return '{} -- {}'.format(self.code, self.transmitter.address)
+
+
+# questa classe prende instaza dell'antenna in
+# modalita' SERVER, conserva i pacchetti 
+# ricevuti in __memoize e si occupa 
+# dell'invio di pacchetti verso il CLIENT (bici)
+#
+# code --> codice con cui viene identif. nei pacchetti
+# address --> indirizzo dell'antenna client
+# server --> instanza dell'antenna server
+class Taurus(Bike):
+    def __init__(self, code, address, server):
+        super().__init__(code, address, server)
+
+        # inserisce l'istanza corrente
+        # nei listener dell'antenna del server
+        self.transmitter.listener = self
 
         # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
@@ -222,40 +272,12 @@ class Taurus:
         return state.jsonify if state != None else {}
 
     # TODO: Inserire gli altri pacchetti
-
-    # DIREZIONE: server --> bici
-    def send(self, packet):
-        self.transmitter.send(self.address, Packet(packet))
-
+    
     # DIREZIONE: bici --> server
     def receive(self, packet):
         tipo = packet.content[1]
         self.__memoize.update({tipo: packet})
 
     def __str__(self):
-        return self.code + ' -- ' + self.address
+        return '{} -- {}'.format(self.code, self.address)
 
-
-class Bike:
-    def __init__(self, address, client, sensors):
-        # indirizzo dell'antenna del server
-        self.address = address
-        self.transmitter = client
-
-        # memorizza le instanze dei valori utili
-        self.sensors = sensors
-
-        # inserisce l'instanza corrente
-        # come client dell'antenna
-        self.transmitter.bike = self
-
-        # Constanti per il dizionario dei pacchetti
-        self.CONST = Const()
-
-    # DIREZIONE: bici --> server
-    def send(self, packet):
-        self.transmitter.send(self.address, Packet(packet))
-
-    # DIREZIONE: server --> bici
-    def receive(self, packet):
-        pass
