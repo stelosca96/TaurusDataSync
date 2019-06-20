@@ -72,7 +72,7 @@ class Server:
             raw = xbee_message.data.decode()
             packet = Packet(raw)
             log.debug('Received packet: {}'.format(packet))
-            dest = self.listener.get(packet.content[0])
+            dest = self.listener.get(packet.dest)
             dest.receive(packet)
 
     def __open_device(self, port, baud_rate):
@@ -108,17 +108,24 @@ class Packet:
         self.__content = self.__decode(content)
 
     @property
+    def dest(self):
+        return self.content[0] if len(self) > 0 else None
+
+    @property
+    def tipo(self):
+        return self.content[1] if len(self) > 0 else None
+
+    @property
     def encode(self):
         return ';'.join(map(str, self.content))
 
     @property
     def jsonify(self):
-        tipo = self.content[1]
         content = list(self.content[:])
         content.reverse()
 
         with open('pyxbee/packets.json') as f:
-            res = json.load(f)[str(tipo)]
+            res = json.load(f)[str(self.tipo)]
 
         for key, _ in res.items():
             res[key] = content.pop()
@@ -196,8 +203,7 @@ class Taurus:
         self.transmitter.send(self.address, Packet(packet))
 
     def receive(self, packet):
-        tipo = packet.content[1]
-        self.__memoize.update({tipo: packet})
+        self.__memoize.update({packet.tipo: packet})
 
     def __str__(self):
         return self.code + ' -- ' + self.address
