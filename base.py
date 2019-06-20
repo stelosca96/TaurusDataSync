@@ -191,22 +191,26 @@ class Packet:
 # client --> instanza dell'antenna client
 class Bike:
     def __init__(self, code, address, client, sensors):
-        self.address = address
-        self.code = code
-        self.transmitter = client
+        self.__address = address
+        self.__code = code
+        self.__transmitter = client
 
         # memorizza le instanze dei valori utili
-        self.sensors = sensors
+        self.__sensors = sensors
 
         # inserisce l'instanza corrente
         # come client dell'antenna
-        self.transmitter.bike = self
+        self.__transmitter.bike = self
 
         # Constanti per il dizionario dei pacchetti
         self.CONST = Const()
 
         # memorizza i pacchetti ricevuti
-        self.__memoize = dict()
+        self.__memoize = list()
+
+    @property
+    def packets(self):
+        return self.__memoize
 
     @property
     def data(self):
@@ -220,18 +224,19 @@ class Bike:
 
     # DIREZIONE: server --> bici
     def send(self, packet):
-        self.transmitter.send(self.address, Packet(packet))
+        self.__transmitter.send(self.__address, Packet(packet))
 
     # DIREZIONE: server --> bici
     @abstractmethod
     def receive(self, packet):
-        # TODO: mandare un segnale al main
-        # per il pacchetto ricevuto
-        pass
+        self.__memoize.append(packet)
+
+    def __len__(self):
+        return len(self.__memoize)        
 
     @abstractmethod
     def __str__(self):
-        return '{} -- {}'.format(self.code, self.transmitter.address)
+        return '{} -- {}'.format(self.__code, self.__transmitter.address)
 
 
 # questa classe prende instaza dell'antenna in
@@ -248,12 +253,16 @@ class Taurus(Bike):
 
         # inserisce l'istanza corrente
         # nei listener dell'antenna del server
-        self.transmitter.listener = self
+        self.__transmitter.listener = self
 
         # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
         # soluzione di continuita'
         self.__history = list()
+
+        # memorizza un pacchetto 
+        # ricevuto per ogni tipo
+        self.__memoize = dict()
 
     @property
     def history(self):
@@ -279,5 +288,5 @@ class Taurus(Bike):
         self.__memoize.update({tipo: packet})
 
     def __str__(self):
-        return '{} -- {}'.format(self.code, self.address)
+        return '{} -- {}'.format(self.__code, self.__address)
 
