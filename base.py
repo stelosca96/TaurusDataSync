@@ -28,6 +28,10 @@ class Const:
         return '1'
 
 
+# Constanti per il identificare i pacchetti
+CONST = Const()
+
+
 # questa classe si interfaccia in con
 # le funzioni di basso livello
 # dello xbee e si occupa i mandare
@@ -106,7 +110,7 @@ class Server(_Transmitter):
 
     # DIREZIONE: bici --> server
     def manage_packet(self, packet):
-        dest = self.listener.get(packet.content[0])
+        dest = self.listener.get(packet.dest)
         dest.receive(packet)
 
 
@@ -146,17 +150,24 @@ class Packet:
         self.__content = self.__decode(content)
 
     @property
+    def dest(self):
+        return self.content[0] if len(self) > 0 else None
+
+    @property
+    def tipo(self):
+        return self.content[1] if len(self) > 0 else None
+
+    @property
     def encode(self):
         return ';'.join(map(str, self.content))
 
     @property
     def jsonify(self):
-        tipo = self.content[1]
         content = list(self.content[:])
         content.reverse()
 
         with open('pyxbee/packets.json') as f:
-            res = json.load(f)[str(tipo)]
+            res = json.load(f)[str(self.tipo)]
 
         for key, _ in res.items():
             res[key] = content.pop()
@@ -201,9 +212,6 @@ class Bike:
         # inserisce l'instanza corrente
         # come client dell'antenna
         self.__transmitter.bike = self
-
-        # Constanti per il dizionario dei pacchetti
-        self.CONST = Const()
 
         # memorizza i pacchetti ricevuti
         self.__memoize = list()
@@ -270,14 +278,14 @@ class Taurus(Bike):
 
     @property
     def data(self):
-        data = self.__memoize.get(self.CONST.DATA)
+        data = self.__memoize.get(CONST.DATA)
         jdata = data.jsonify if data != None else {}
         self.__history.append(jdata)
         return jdata
 
     @property
     def state(self):
-        state = self.__memoize.get(self.CONST.STATE)
+        state = self.__memoize.get(CONST.STATE)
         return state.jsonify if state != None else {}
 
     # TODO: Inserire gli altri pacchetti
