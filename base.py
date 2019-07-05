@@ -11,11 +11,11 @@ log = logging.getLogger(__name__)
 
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
+
+
 # NOTE: ogni nuovo pacchetto
 # che deve essere mandato al
 # frontend deve avere la sua costante
-
-
 class Const:
     @property
     def DATA(self):
@@ -35,6 +35,22 @@ class Server:
     def __init__(self):
         self.__listener = dict()
         self.device = self.__open_device(PORT, BAUD_RATE)
+
+    def __del__(self):
+        if self.device is not None and self.device.is_open():
+            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
+            self.device.close()
+
+    def __open_device(self, port, baud_rate):
+        device = XBeeDevice(port, baud_rate)
+        try:
+            device.open()
+            device.add_data_received_callback(self.receiver)
+            log.info('Antenna ({}) collegata\n'.format(
+                device.get_64bit_addr()))
+            return device
+        except (InvalidOperatingModeException, SerialException):
+            log.error('Nessuna antenna trovata')
 
     @property
     def listener(self):
@@ -75,21 +91,6 @@ class Server:
             dest = self.listener.get(packet.dest)
             dest.receive(packet)
 
-    def __open_device(self, port, baud_rate):
-        device = XBeeDevice(port, baud_rate)
-        try:
-            device.open()
-            device.add_data_received_callback(self.receiver)
-            log.info('Antenna ({}) collegata\n'.format(device.get_64bit_addr()))
-            return device
-        except (InvalidOperatingModeException, SerialException):
-            log.error('Nessuna antenna trovata')
-
-    def __del__(self):
-        if self.device is not None and self.device.is_open():
-            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
-            self.device.close()
-
 
 # questa classe crea dei pacchetti
 # contenitori sottoforma di liste
@@ -98,6 +99,24 @@ class Server:
 class Packet:
     def __init__(self, content=tuple()):
         self.__content = self.__decode(content)
+
+    def __len__(self):
+        return len(self.content)
+
+    def __str__(self):
+        return str(self.content)
+
+    @classmethod
+    def __decode(cls, data):
+        # se viene passato un dict, una lista o una
+        # stringa cruda la trasforma in tupla
+        if isinstance(data, (list, tuple)):
+            res = data
+        elif isinstance(data, dict):
+            res = [i for i in data.values()]
+        else:
+            res = data.split(';')
+        return tuple(res)
 
     @property
     def content(self):
@@ -131,24 +150,6 @@ class Packet:
             res[key] = content.pop()
         return json.dumps(res)
 
-    @classmethod
-    def __decode(cls, data):
-        # se viene passato un dict, una lista o una
-        # stringa cruda la trasforma in tupla
-        if isinstance(data, (list, tuple)):
-            res = data
-        elif isinstance(data, dict):
-            res = [i for i in data.values()]
-        else:
-            res = data.split(';')
-        return tuple(res)
-
-    def __len__(self):
-        return len(self.content)
-
-    def __str__(self):
-        return str(self.content)
-
 
 # questa classe istazia l'antenna
 # della bici corrispondente e conserva
@@ -180,6 +181,9 @@ class Taurus:
         # soluzione di continuita'
         self.__history = list()
 
+    def __str__(self):
+        return self.code + ' -- ' + self.address
+
     @property
     def data(self):
         data = self.__memoize.get(self.CONST.DATA)
@@ -204,6 +208,3 @@ class Taurus:
 
     def receive(self, packet):
         self.__memoize.update({packet.tipo: packet})
-
-    def __str__(self):
-        return self.code + ' -- ' + self.address
