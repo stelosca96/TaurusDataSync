@@ -192,19 +192,33 @@ class Packet:
         return str(self.content)
 
 
+# classe genitore per la modalita' server e client
+class _SuperBike:
+    def __init__(self, code, address, transmitter):
+        self.__address = address
+        self.__code = code
+        self.__transmitter = transmitter
+
+    @abstractmethod
+    def receive(self, packet):
+        pass
+
+    # DIREZIONE: server --> bici
+    def send(self, packet):
+        self.__transmitter.send(self.__address, Packet(packet))
+
+
 # questa classe prende instaza dell'antenna in
-# modalita' CLIENT, conserva i pacchetti 
-# ricevuti in __memoize e si occupa 
+# modalita' CLIENT, conserva i pacchetti
+# ricevuti in __memoize e si occupa
 # dell'invio di pacchetti verso il SERVER (marta)
 #
 # code --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna server
 # client --> instanza dell'antenna client
-class Bike:
+class Bike(_SuperBike):
     def __init__(self, code, address, client, sensors):
-        self.__address = address
-        self.__code = code
-        self.__transmitter = client
+        super().__init__(code, address, client)
 
         # memorizza le instanze dei valori utili
         self.__sensors = sensors
@@ -215,6 +229,12 @@ class Bike:
 
         # memorizza i pacchetti ricevuti
         self.__memoize = list()
+
+    def __len__(self):
+        return len(self.__memoize)
+
+    def __str__(self):
+        return '{} -- {}'.format(self.__code, self.__transmitter.address)
 
     @property
     def packets(self):
@@ -231,31 +251,19 @@ class Bike:
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
-    def send(self, packet):
-        self.__transmitter.send(self.__address, Packet(packet))
-
-    # DIREZIONE: server --> bici
-    @abstractmethod
     def receive(self, packet):
         self.__memoize.append(packet)
 
-    def __len__(self):
-        return len(self.__memoize)        
-
-    @abstractmethod
-    def __str__(self):
-        return '{} -- {}'.format(self.__code, self.__transmitter.address)
-
 
 # questa classe prende instaza dell'antenna in
-# modalita' SERVER, conserva i pacchetti 
-# ricevuti in __memoize e si occupa 
+# modalita' SERVER, conserva i pacchetti
+# ricevuti in __memoize e si occupa
 # dell'invio di pacchetti verso il CLIENT (bici)
 #
 # code --> codice con cui viene identif. nei pacchetti
 # address --> indirizzo dell'antenna client
 # server --> instanza dell'antenna server
-class Taurus(Bike):
+class Taurus(_SuperBike):
     def __init__(self, code, address, server):
         super().__init__(code, address, server)
 
@@ -268,9 +276,12 @@ class Taurus(Bike):
         # soluzione di continuita'
         self.__history = list()
 
-        # memorizza un pacchetto 
+        # memorizza un pacchetto
         # ricevuto per ogni tipo
         self.__memoize = dict()
+
+    def __str__(self):
+        return '{} -- {}'.format(self.__code, self.__address)
 
     @property
     def history(self):
@@ -289,12 +300,8 @@ class Taurus(Bike):
         return state.jsonify if state != None else {}
 
     # TODO: Inserire gli altri pacchetti
-    
+
     # DIREZIONE: bici --> server
     def receive(self, packet):
         tipo = packet.content[1]
         self.__memoize.update({tipo: packet})
-
-    def __str__(self):
-        return '{} -- {}'.format(self.__code, self.__address)
-
