@@ -41,6 +41,21 @@ class _Transmitter:
     def __init__(self):
         self.device = self.__open_device(PORT, BAUD_RATE)
 
+    def __del__(self):
+        if self.device is not None and self.device.is_open():
+            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
+            self.device.close()
+
+    def __open_device(self, port, baud_rate):
+        device = XBeeDevice(port, baud_rate)
+        try:
+            device.open()
+            device.add_data_received_callback(self.receiver)
+            log.info('Device ({}) connected\n'.format(device.get_64bit_addr()))
+            return device
+        except (InvalidOperatingModeException, SerialException):
+            log.error('Nessuna antenna trovata')
+
     @property
     def address(self):
         return self.device.get_64bit_addr()
@@ -77,21 +92,6 @@ class _Transmitter:
     @abstractmethod
     def manage_packet(self, packet):
         pass
-
-    def __open_device(self, port, baud_rate):
-        device = XBeeDevice(port, baud_rate)
-        try:
-            device.open()
-            device.add_data_received_callback(self.receiver)
-            log.info('Device ({}) connected\n'.format(device.get_64bit_addr()))
-            return device
-        except (InvalidOperatingModeException, SerialException):
-            log.error('Nessuna antenna trovata')
-
-    def __del__(self):
-        if self.device is not None and self.device.is_open():
-            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
-            self.device.close()
 
 
 # SERVER mode del transmitter
@@ -141,6 +141,24 @@ class Packet:
     def __init__(self, content=tuple()):
         self.__content = self.__decode(content)
 
+    def __len__(self):
+        return len(self.content)
+
+    def __str__(self):
+        return str(self.content)
+
+    @classmethod
+    def __decode(cls, data):
+        # se viene passato un dict, una lista o una
+        # stringa cruda la trasforma in tupla
+        if isinstance(data, (list, tuple)):
+            res = data
+        elif isinstance(data, dict):
+            res = [i for i in data.values()]
+        else:
+            res = data.split(';')
+        return tuple(res)
+
     @property
     def content(self):
         return self.__content
@@ -172,24 +190,6 @@ class Packet:
         for key, _ in res.items():
             res[key] = content.pop()
         return json.dumps(res)
-
-    @classmethod
-    def __decode(cls, data):
-        # se viene passato un dict, una lista o una
-        # stringa cruda la trasforma in tupla
-        if isinstance(data, (list, tuple)):
-            res = data
-        elif isinstance(data, dict):
-            res = [i for i in data.values()]
-        else:
-            res = data.split(';')
-        return tuple(res)
-
-    def __len__(self):
-        return len(self.content)
-
-    def __str__(self):
-        return str(self.content)
 
 
 # classe genitore per la modalita' server e client
@@ -240,13 +240,16 @@ class Bike(_SuperBike):
     def packets(self):
         return self.__memoize
 
+    # DIREZIONE: bici -> server
     @property
-    def data(self):
-        pass
+    def send_data(self, data):
+        data.update({"dest": self.__code, "type": CONST.DATA})
+        self.send(data)
 
     @property
-    def state(self):
-        pass
+    def send_state(self, state):
+        state.update({"dest": self.__code, "type": CONST.STATE})
+        self.send(state)
 
     # TODO: Inserire gli altri pacchetti
 
