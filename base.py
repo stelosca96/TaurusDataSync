@@ -11,6 +11,8 @@ from abc import abstractmethod
 
 log = logging.getLogger(__name__)
 
+log = logging.getLogger(__name__)
+
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 115200
 
@@ -279,6 +281,7 @@ class Taurus(_SuperBike):
         # soluzione di continuita'
         self.__history = list()
 
+
         # memorizza un pacchetto
         # ricevuto per ogni tipo
         self.__memoize = dict()
@@ -301,6 +304,10 @@ class Taurus(_SuperBike):
     def state(self):
         state = self.__memoize.get(CONST.STATE)
         return state.jsonify if state != None else {}
+
+    @property
+    def history(self):
+        return self.__history
 
     # TODO: Inserire gli altri pacchetti
 
