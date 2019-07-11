@@ -199,13 +199,26 @@ class _SuperBike:
         self.__code = code
         self.__transmitter = transmitter
 
+    @property
+    def transmitter(self):
+        return self.__transmitter
+
+    @property
+    def code(self):
+        return self.__code
+
+    @property
+    def address(self):
+        return self.__address
+
     @abstractmethod
     def receive(self, packet):
         pass
 
     # DIREZIONE: server --> bici
+
     def send(self, packet):
-        self.__transmitter.send(self.__address, Packet(packet))
+        self.transmitter.send(self.address, Packet(packet))
 
 
 # questa classe prende instaza dell'antenna in
@@ -225,7 +238,7 @@ class Bike(_SuperBike):
 
         # inserisce l'instanza corrente
         # come client dell'antenna
-        self.__transmitter.bike = self
+        self.transmitter.bike = self
 
         # memorizza i pacchetti ricevuti
         self.__memoize = list()
@@ -234,7 +247,7 @@ class Bike(_SuperBike):
         return len(self.__memoize)
 
     def __str__(self):
-        return '{} -- {}'.format(self.__code, self.__transmitter.address)
+        return '{} -- {}'.format(self.code, self.transmitter.address)
 
     @property
     def packets(self):
@@ -243,12 +256,12 @@ class Bike(_SuperBike):
     # DIREZIONE: bici -> server
     @property
     def send_data(self, data):
-        data.update({"dest": self.__code, "type": CONST.DATA})
+        data.update({"dest": self.code, "type": CONST.DATA})
         self.send(data)
 
     @property
     def send_state(self, state):
-        state.update({"dest": self.__code, "type": CONST.STATE})
+        state.update({"dest": self.code, "type": CONST.STATE})
         self.send(state)
 
     # TODO: Inserire gli altri pacchetti
@@ -272,7 +285,7 @@ class Taurus(_SuperBike):
 
         # inserisce l'istanza corrente
         # nei listener dell'antenna del server
-        self.__transmitter.listener = self
+        self.transmitter.listener = self
 
         # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
@@ -284,7 +297,7 @@ class Taurus(_SuperBike):
         self.__memoize = dict()
 
     def __str__(self):
-        return '{} -- {}'.format(self.__code, self.__address)
+        return '{} -- {}'.format(self.code, self.address)
 
     @property
     def history(self):
