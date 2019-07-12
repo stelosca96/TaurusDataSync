@@ -11,7 +11,7 @@ from abc import abstractmethod
 
 log = logging.getLogger(__name__)
 
-PORT = "/dev/ttyUSB0"
+PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
 
@@ -256,12 +256,12 @@ class Bike(_SuperBike):
     # DIREZIONE: bici -> server
     @property
     def send_data(self, data):
-        data.update({"dest": self.code, "type": CONST.DATA})
+        data.update({'dest': self.code, 'type': CONST.DATA})
         self.send(data)
 
     @property
     def send_state(self, state):
-        state.update({"dest": self.code, "type": CONST.STATE})
+        state.update({'dest': self.code, 'type': CONST.STATE})
         self.send(state)
 
     # TODO: Inserire gli altri pacchetti
