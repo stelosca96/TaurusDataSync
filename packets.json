@@ -1,5 +1,4 @@
 {
-  "__comment": "aggiungere run_lenght al pachetto 1",
   "0": {
     "dest": "",
     "type": "",
@@ -33,10 +32,21 @@
     "antilope": "",
     "update": ""
   },
-  "3": {
+  "2": {
     "dest": "",
     "type": "",
     "valore": ""
+  },
+  "3": {
+    "dest": "",
+    "type": "",
+    "circonferenza": "",
+    "run": "",
+    "log": "",
+    "csv": "",
+    "ant": "",
+    "potenza": "",
+    "led": ""
   },
   "4": {
     "dest": "",
@@ -45,23 +55,21 @@
   },
   "5": {
     "dest": "",
-    "type": ""
+    "type": "",
+    "messaggio": "",
+    "priorita": "",
+    "durata": "",
+    "timeout": ""
   },
   "6": {
-    "dest": "",
-    "type": ""
-  },
-  "9": {
     "dest": "",
     "type": "",
     "valore": ""
   },
-  "11": {
+  "7": {
     "dest": "",
-    "type": ""
-  },
-  "13": {
-    "dest": "",
-    "type": ""
+    "type": "",
+    "valore": "",
+    "nome_file": ""
   }
 }

@@ -16,19 +16,50 @@ BAUD_RATE = 115200
 
 
 # NOTE: ogni nuovo pacchetto
-# che deve essere mandato al
-# frontend deve avere la sua costante
+# deve avere la sua costante
 class Const:
     @property
-    def DATA(self):
+    @staticmethod
+    def DATA():
         return '0'
 
     @property
-    def STATE(self):
+    @staticmethod
+    def STATE():
         return '1'
 
+    @property
+    @staticmethod
+    def NOTICE():
+        return '2'
 
-# Constanti per il identificare i pacchetti
+    @property
+    @staticmethod
+    def SETTING():
+        return '3'
+
+    @property
+    @staticmethod
+    def SIGNAL():
+        return '4'
+
+    @property
+    @staticmethod
+    def MESSAGE():
+        return '5'
+
+    @property
+    @staticmethod
+    def RASPBERRY():
+        return '6'
+
+    @property
+    @staticmethod
+    def VIDEO():
+        return '7'
+
+
+# Constante per identificare i pacchetti
 CONST = Const()
 
 
@@ -319,5 +350,4 @@ class Taurus(_SuperBike):
 
     # DIREZIONE: bici --> server
     def receive(self, packet):
-        tipo = packet.content[1]
-        self.__memoize.update({tipo: packet})
+        self.__memoize.update({packet.tipo: packet})
