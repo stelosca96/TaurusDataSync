@@ -1,31 +1,47 @@
-### Legenda (non aggiornata)
+## Legenda
 
-#### CAMPI PACCHETT0
+### CAMPI PACCHETT0
 
     0.  "destinatario"    0 -> Taurus | 1 -> TaurusX  
-    1.  "tipo"            0 >> 13
-    2.  "contenuto"       varia in base al tipo di pacchetto   
+    1.  "tipo"            0 >> 7
+    2.  "contenuto"       varia in base al tipo di pacchetto
 
-#### TIPO DI PACCHETTO
+### TIPO DI PACCHETTO
 
-    #0  -> DATI
-    #1  -> IMPOSTAZIONI SALVATE SU TAURUS
-    #3  -> CALIBRAZIONE POWERMETER
-    #4  -> IMPOSTAZIONE CIRCONFERENZA
-    #5  -> RESET (Distanza, Timer)
-    #6  -> REGISTRAZIONE VIDEO
-    #7  -> CALIBRAZIONE CAMBIO
-    #8  -> MESSAGGI SU SCHERMO
-    #9  -> LED
-    #10 -> GESTIONE RASPBERRY
-    #11 -> UPDATE SETTINGS REQUEST
-    #13 -> PACCHETTO 13
+    0  -> DATI
+    1  -> STATE
+    2  -> NOTIFICA
+    3  -> IMPOSTAZIONI
+    4  -> SEGNALI
+    5  -> MESSAGGI
+    6  -> GESTIONE RASPBERRY
+    7  -> VIDEO
 
-#### PORTA USB
+SEGNALI:
+
+    0  -> calibra cambio
+    1  -> calibra powermeter
+    2  -> reset
+    ...
+    13 -> p13
+    ...
+
+RASPBERRY:
+
+    0  -> spengi
+    1  -> riavvia
+    ...
+
+VIDEO:
+
+    0  -> avvio video
+    1  -> termina video e salva
+
+### PORTA USB
 
     dmesg | grep tty
 
-#### INDIRIZZI ANTENNE
+### INDIRIZZI ANTENNE
 
     arduino nano v2 (cavo giallo) -> "0013A200418AF52F"
     ardiuno nano v1 (due cavi)    -> "0013A200418AE5A9"
