@@ -19,43 +19,43 @@ BAUD_RATE = 115200
 # deve avere la sua costante
 class Const:
     @property
-    @staticmethod
-    def DATA():
+    @classmethod
+    def DATA(cls):
         return '0'
 
     @property
-    @staticmethod
-    def STATE():
+    @classmethod
+    def STATE(cls):
         return '1'
 
     @property
-    @staticmethod
-    def NOTICE():
+    @classmethod
+    def NOTICE(cls):
         return '2'
 
     @property
-    @staticmethod
-    def SETTING():
+    @classmethod
+    def SETTING(cls):
         return '3'
 
     @property
-    @staticmethod
-    def SIGNAL():
+    @classmethod
+    def SIGNAL(cls):
         return '4'
 
     @property
-    @staticmethod
-    def MESSAGE():
+    @classmethod
+    def MESSAGE(cls):
         return '5'
 
     @property
-    @staticmethod
-    def RASPBERRY():
+    @classmethod
+    def RASPBERRY(cls):
         return '6'
 
     @property
-    @staticmethod
-    def VIDEO():
+    @classmethod
+    def VIDEO(cls):
         return '7'
 
 
