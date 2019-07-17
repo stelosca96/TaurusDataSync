@@ -286,13 +286,15 @@ class Bike(_SuperBike):
 
     # DIREZIONE: bici -> server
     @property
-    def send_data(self, data):
-        data.update({'dest': self.code, 'type': CONST.DATA})
+    def send_data(self, d):
+        data = {'dest': self.code, 'type': CONST.DATA}
+        data.update(d)
         self.send(data)
 
     @property
-    def send_state(self, state):
-        state.update({'dest': self.code, 'type': CONST.STATE})
+    def send_state(self, s):
+        state = {'dest': self.code, 'type': CONST.STATE}
+        state.update(s)
         self.send(state)
 
     # TODO: Inserire gli altri pacchetti
