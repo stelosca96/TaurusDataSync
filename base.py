@@ -180,12 +180,20 @@ class Packet:
 
     @classmethod
     def __decode(cls, data):
-        # se viene passato un dict, una lista o una
-        # stringa cruda la trasforma in tupla
-        if isinstance(data, (list, tuple)):
+        # se viene passato un dizionario aggiorna i
+        # valori da un pacchetto vuoto.
+        # ORDINE NON IMPORTANTE
+        if isinstance(data, dict):
+            tipo = data.get('type')
+            with open('pyxbee/packets.json') as f:
+                d = json.load(f)[str(tipo)]
+            d.update(data)
+            res = d.values()
+        # se viene passato un una lista/tupla/stringa
+        # ne estrae i valori e li salva in tupla.
+        # ORDINE IMPORTANTE
+        elif isinstance(data, (list, tuple)):
             res = data
-        elif isinstance(data, dict):
-            res = [i for i in data.values()]
         else:
             res = data.split(';')
         return tuple(res)
@@ -212,8 +220,7 @@ class Packet:
 
     @property
     def jsonify(self):
-        content = list(self.content[:])
-        content.reverse()
+        content = list(self.content[::-1])
 
         with open('pyxbee/packets.json') as f:
             res = json.load(f)[str(self.tipo)]
