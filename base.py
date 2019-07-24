@@ -15,54 +15,6 @@ PORT = '/dev/ttyUSB0'
 BAUD_RATE = 115200
 
 
-# NOTE: ogni nuovo pacchetto
-# deve avere la sua costante
-class Const:
-    @property
-    @classmethod
-    def DATA(cls):
-        return '0'
-
-    @property
-    @classmethod
-    def STATE(cls):
-        return '1'
-
-    @property
-    @classmethod
-    def NOTICE(cls):
-        return '2'
-
-    @property
-    @classmethod
-    def SETTING(cls):
-        return '3'
-
-    @property
-    @classmethod
-    def SIGNAL(cls):
-        return '4'
-
-    @property
-    @classmethod
-    def MESSAGE(cls):
-        return '5'
-
-    @property
-    @classmethod
-    def RASPBERRY(cls):
-        return '6'
-
-    @property
-    @classmethod
-    def VIDEO(cls):
-        return '7'
-
-
-# Constante per identificare i pacchetti
-CONST = Const()
-
-
 # questa classe si interfaccia in con
 # le funzioni di basso livello
 # dello xbee e si occupa i mandare
@@ -169,6 +121,16 @@ class Client(_Transmitter):
 # e fornisce metodi per facilitare la
 # comunicazione con il frontend
 class Packet:
+    class Type:
+        DATA = '0'
+        STATE = '1'
+        NOTICE = '2'
+        SETTING = '3'
+        SIGNAL = '4'
+        MESSAGE = '5'
+        RASPBERRY = '6'
+        VIDEO = '7'
+
     def __init__(self, content=tuple()):
         self.__content = self.__decode(content)
 
@@ -294,13 +256,13 @@ class Bike(_SuperBike):
     # DIREZIONE: bici -> server
     @property
     def send_data(self, d):
-        data = {'dest': self.code, 'type': CONST.DATA}
+        data = {'dest': self.code, 'type': Packet.Type.DATA}
         data.update(d)
         self.send(data)
 
     @property
     def send_state(self, s):
-        state = {'dest': self.code, 'type': CONST.STATE}
+        state = {'dest': self.code, 'type': Packet.Type.STATE}
         state.update(s)
         self.send(state)
 
@@ -345,14 +307,14 @@ class Taurus(_SuperBike):
 
     @property
     def data(self):
-        data = self.__memoize.get(CONST.DATA)
+        data = self.__memoize.get(Packet.Type.DATA)
         jdata = data.jsonify if data != None else {}
         self.__history.append(jdata)
         return jdata
 
     @property
     def state(self):
-        state = self.__memoize.get(CONST.STATE)
+        state = self.__memoize.get(Packet.Type.STATE)
         return state.jsonify if state != None else {}
 
     # TODO: Inserire gli altri pacchetti
