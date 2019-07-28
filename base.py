@@ -22,14 +22,14 @@ BAUD_RATE = 115200
 # stringhe del tipo {};{};{};{}
 class _Transmitter:
     def __init__(self):
-        self.device = self.__open_device(PORT, BAUD_RATE)
+        self.device = self._open_device(PORT, BAUD_RATE)
 
     def __del__(self):
         if self.device is not None and self.device.is_open():
             log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
             self.device.close()
 
-    def __open_device(self, port, baud_rate):
+    def _open_device(self, port, baud_rate):
         device = XBeeDevice(port, baud_rate)
         try:
             device.open()
@@ -81,15 +81,15 @@ class _Transmitter:
 class Server(_Transmitter):
     def __init__(self):
         super().__init__()
-        self.__listener = dict()
+        self._listener = dict()
 
     @property
     def listener(self):
-        return self.__listener
+        return self._listener
 
     @listener.setter
     def listener(self, l):
-        self.__listener.update({l.code: l})
+        self._listener.update({l.code: l})
 
     # DIREZIONE: bici --> server
     def manage_packet(self, packet):
@@ -101,15 +101,15 @@ class Server(_Transmitter):
 class Client(_Transmitter):
     def __init__(self):
         super().__init__()
-        self.__bike = None
+        self._bike = None
 
     @property
     def bike(self):
-        return self.__bike
+        return self._bike
 
     @bike.setter
     def bike(self, b):
-        self.__bike = b
+        self._bike = b
 
     # DIREZIONE: server --> bici
     def manage_packet(self, packet):
@@ -131,8 +131,9 @@ class Packet:
         RASPBERRY = '6'
         VIDEO = '7'
 
+    # @TODO: Passare ai dizionari
     def __init__(self, content=tuple()):
-        self.__content = self.__decode(content)
+        self._content = self._decode(content)
 
     def __len__(self):
         return len(self.content)
@@ -141,7 +142,7 @@ class Packet:
         return str(self.content)
 
     @classmethod
-    def __decode(cls, data):
+    def _decode(cls, data):
         # se viene passato un dizionario aggiorna i
         # valori da un pacchetto vuoto.
         # ORDINE NON IMPORTANTE
@@ -162,11 +163,12 @@ class Packet:
 
     @property
     def content(self):
-        return self.__content
+        return self._content
 
+    # TODO: controllare se serve ancora
     @content.setter
     def content(self, content):
-        self.__content = self.__decode(content)
+        self._content = self._decode(content)
 
     @property
     def dest(self):
@@ -175,6 +177,10 @@ class Packet:
     @property
     def tipo(self):
         return self.content[1] if len(self) > 0 else None
+
+    @property
+    def value(self):
+        return self.content[2:]
 
     @property
     def encode(self):
@@ -191,34 +197,38 @@ class Packet:
             res[key] = content.pop()
         return json.dumps(res)
 
+    @property
+    def dictify(self):
+        return dict(self.jsonify)
+
 
 # classe genitore per la modalita' server e client
 class _SuperBike:
     def __init__(self, code, address, transmitter):
-        self.__address = address
-        self.__code = code
-        self.__transmitter = transmitter
+        self._address = address
+        self._code = code
+        self._transmitter = transmitter
 
     @property
     def transmitter(self):
-        return self.__transmitter
+        return self._transmitter
 
     @property
     def code(self):
-        return self.__code
+        return self._code
 
     @property
     def address(self):
-        return self.__address
+        return self._address
 
     @abstractmethod
     def receive(self, packet):
         pass
 
     # DIREZIONE: server --> bici
-
     def send(self, packet):
-        self.transmitter.send(self.address, Packet(packet))
+        data = packet if isinstance(packet, Packet) else Packet(packet)
+        self.transmitter.send(self.address, data)
 
 
 # questa classe prende instaza dell'antenna in
@@ -234,43 +244,50 @@ class Bike(_SuperBike):
         super().__init__(code, address, client)
 
         # memorizza le instanze dei valori utili
-        self.__sensors = sensors
+        self._sensors = sensors
 
         # inserisce l'instanza corrente
         # come client dell'antenna
         self.transmitter.bike = self
 
         # memorizza i pacchetti ricevuti
-        self.__memoize = list()
+        self._memoize = list()
 
     def __len__(self):
-        return len(self.__memoize)
+        return len(self._memoize)
 
     def __str__(self):
         return '{} -- {}'.format(self.code, self.transmitter.address)
 
     @property
     def packets(self):
-        return self.__memoize
+        return self._memoize
 
     # DIREZIONE: bici -> server
-    @property
+    def blind_send(self, packet: Packet):
+        self.send(packet)
+
     def send_data(self, d):
         data = {'dest': self.code, 'type': Packet.Type.DATA}
         data.update(d)
         self.send(data)
 
-    @property
+    # NOTE: probabilmente da deprecare
     def send_state(self, s):
         state = {'dest': self.code, 'type': Packet.Type.STATE}
         state.update(s)
         self.send(state)
 
+    def send_setting(self, s):
+        settings = {'dest': self.code, 'type': Packet.Type.SETTING}
+        settings.update(s)
+        self.send(settings)
+
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: server --> bici
     def receive(self, packet):
-        self.__memoize.append(packet)
+        self._memoize.append(packet)
 
 
 # questa classe prende instaza dell'antenna in
@@ -292,33 +309,38 @@ class Taurus(_SuperBike):
         # colleziona i pacchetti mandati al frontend
         # per visualizzarli al reload della pagina con
         # soluzione di continuita'
-        self.__history = list()
+        self._history = list()
 
         # memorizza un pacchetto
         # ricevuto per ogni tipo
-        self.__memoize = dict()
+        self._memoize = dict()
 
     def __str__(self):
         return '{} -- {}'.format(self.code, self.address)
 
     @property
     def history(self):
-        return self.__history
+        return self._history
 
     @property
     def data(self):
-        data = self.__memoize.get(Packet.Type.DATA)
+        data = self._memoize.get(Packet.Type.DATA)
         jdata = data.jsonify if data != None else {}
-        self.__history.append(jdata)
+        self._history.append(jdata)
         return jdata
 
     @property
     def state(self):
-        state = self.__memoize.get(Packet.Type.STATE)
+        state = self._memoize.get(Packet.Type.STATE)
         return state.jsonify if state != None else {}
+
+    @property
+    def setting(self):
+        sett = self._memoize.get(Packet.Type.SETTING)
+        return sett.jsonify if sett != None else {}
 
     # TODO: Inserire gli altri pacchetti
 
     # DIREZIONE: bici --> server
     def receive(self, packet):
-        self.__memoize.update({packet.tipo: packet})
+        self._memoize.update({packet.tipo: packet})

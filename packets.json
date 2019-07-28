@@ -21,16 +21,7 @@
     "powermeter_running": "",
     "heartrate_running": "",
     "speed_running": "",
-    "average_power_time": "",
-    "led_mode": "",
-    "circumference": "",
-    "csv": "",
-    "timer": "",
-    "calibration": "",
-    "calibration_value": "",
-    "video_record": "",
-    "antilope": "",
-    "update": ""
+    "calibration": ""
   },
   "2": {
     "dest": "",
@@ -46,7 +37,11 @@
     "csv": "",
     "ant": "",
     "potenza": "",
-    "led": ""
+    "led": "",
+    "video_record": "",
+    "calibration_value": "",
+    "update": "",
+    "p13": ""
   },
   "4": {
     "dest": "",
