@@ -199,7 +199,7 @@ class Packet:
 
     @property
     def dictify(self):
-        return dict(self.jsonify)
+        return json.loads(self.jsonify)
 
 
 # classe genitore per la modalita' server e client

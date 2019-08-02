@@ -16,8 +16,8 @@
     "log": "",
     "video": "",
     "ant": "",
-    "ant_running": "",
     "video_running": "",
+    "video_recording": "",
     "powermeter_running": "",
     "heartrate_running": "",
     "speed_running": "",
@@ -64,7 +64,7 @@
   "7": {
     "dest": "",
     "type": "",
-    "valore": "",
-    "nome_file": ""
+    "value": "",
+    "name_file": ""
   }
 }
