@@ -329,19 +329,19 @@ class Taurus(_SuperBike):
     @property
     def data(self):
         data = self._memoize.get(Packet.Type.DATA)
-        jdata = data.jsonify if data != None else {}
+        jdata = data.jsonify if data is not None else {}
         self._history.append(jdata)
         return jdata
 
     @property
     def state(self):
         state = self._memoize.get(Packet.Type.STATE)
-        return state.jsonify if state != None else {}
+        return state.jsonify if state is not None else {}
 
     @property
     def setting(self):
         sett = self._memoize.get(Packet.Type.SETTING)
-        return sett.jsonify if sett != None else {}
+        return sett.jsonify if sett is not None else {}
 
     # TODO: Inserire gli altri pacchetti
 
