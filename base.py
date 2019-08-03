@@ -83,6 +83,8 @@ class Server(_Transmitter):
         super().__init__()
         self._listener = dict()
 
+        self.web = None
+
     @property
     def listener(self):
         return self._listener
@@ -95,6 +97,8 @@ class Server(_Transmitter):
     def manage_packet(self, packet):
         dest = self.listener.get(packet.dest)
         dest.receive(packet)
+        if self.web is not None and packet.tipo == Packet.Type.DATA:
+            self.web.send_data(packet.encode)
 
 
 # CLIENT mode del transmitter
