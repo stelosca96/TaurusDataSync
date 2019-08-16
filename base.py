@@ -24,11 +24,15 @@ class _Transmitter:
     def __init__(self):
         self._device = self._open_device(PORT, BAUD_RATE)
 
+    @property
+    def device(self):
+        return self._device
+
     def __del__(self):
-        if self._device is not None:
-            if self._device.is_open():
-                self._device.close()
-                log.debug('Device ({}) close'.format(self._device.get_64bit_addr()))
+        if self.device is not None:
+            if self.device.is_open():
+                self.device.close()
+                log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
 
     def _open_device(self, port, baud_rate):
         device = XBeeDevice(port, baud_rate)
@@ -42,13 +46,13 @@ class _Transmitter:
 
     @property
     def address(self):
-        return self._device.get_64bit_addr()
+        return self.device.get_64bit_addr()
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
         try:
-            self._device.send_data_async(RemoteXBeeDevice(
-                self._device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+            self.device.send_data_async(RemoteXBeeDevice(
+                self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
             log.error('Dispositivo ({}) non trovato\n'.format(address))
         except AttributeError:
@@ -59,15 +63,15 @@ class _Transmitter:
         # timeout e non riceve risposta
         # lancia l'eccezione
         try:
-            self._device.send_data(RemoteXBeeDevice(
-                self._device, XBee64BitAddress.from_hex_string(address)), packet.encode)
+            self.device.send_data(RemoteXBeeDevice(
+                self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
             log.error('ACK send_sync non ricevuto\n')
         except AttributeError:
             log.error('AttributeError handled\n')
 
     def send_broadcast(self, packet):
-        self._device.send_data_broadcast(packet.encode)
+        self.device.send_data_broadcast(packet.encode)
 
     # DIREZIONE: bici --> server
     def receiver(self, xbee_message):
