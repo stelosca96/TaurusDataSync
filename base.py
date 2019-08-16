@@ -22,11 +22,7 @@ BAUD_RATE = 115200
 # stringhe del tipo {};{};{};{}
 class _Transmitter:
     def __init__(self):
-        try:
-            self.device = self._open_device(PORT, BAUD_RATE)
-        except XBeeException:
-            print("Errore apertura device")
-            self.device = None
+        self.device = self._open_device(PORT, BAUD_RATE)
 
     def __del__(self):
         if self.device is not None:
@@ -50,9 +46,6 @@ class _Transmitter:
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
-        if self.device is None:
-            log.error('Antenna non connessa\n')
-            return
         try:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
@@ -62,9 +55,6 @@ class _Transmitter:
             log.error('AttributeError handled\n')
 
     def send_sync(self, address, packet):
-        if self.device is None:
-            log.error('Antenna non connessa\n')
-            return
         # aspetta l'ack, se scatta il
         # timeout e non riceve risposta
         # lancia l'eccezione
