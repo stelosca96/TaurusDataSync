@@ -1,7 +1,7 @@
 import json
 import logging
 
-from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice
+from digi.xbee.devices import RemoteXBeeDevice, XBeeDevice, XBeeException
 from digi.xbee.exception import (InvalidOperatingModeException,
                                  InvalidPacketException, TimeoutException)
 from digi.xbee.models.address import XBee64BitAddress
@@ -22,7 +22,11 @@ BAUD_RATE = 115200
 # stringhe del tipo {};{};{};{}
 class _Transmitter:
     def __init__(self):
-        self.device = self._open_device(PORT, BAUD_RATE)
+        try:
+            self.device = self._open_device(PORT, BAUD_RATE)
+        except XBeeException:
+            print("Errore apertura device")
+            self.device = None
 
     def __del__(self):
         if self.device is not None and self.device.is_open():
@@ -45,6 +49,9 @@ class _Transmitter:
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
+        if self.device is None:
+            log.error('Antenna non connessa\n')
+            return
         try:
             self.device.send_data_async(RemoteXBeeDevice(
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
@@ -52,6 +59,9 @@ class _Transmitter:
             log.error('Dispositivo ({}) non trovato\n'.format(address))
 
     def send_sync(self, address, packet):
+        if self.device is None:
+            log.error('Antenna non connessa\n')
+            return
         # aspetta l'ack, se scatta il
         # timeout e non riceve risposta
         # lancia l'eccezione
