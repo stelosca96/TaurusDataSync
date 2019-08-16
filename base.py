@@ -29,9 +29,10 @@ class _Transmitter:
             self.device = None
 
     def __del__(self):
-        if self.device is not None and self.device.is_open():
-            log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
-            self.device.close()
+        if self.device is not None:
+            if self.device.is_open():
+                self.device.close()
+                log.debug('Device ({}) close'.format(self.device.get_64bit_addr()))
 
     def _open_device(self, port, baud_rate):
         device = XBeeDevice(port, baud_rate)
@@ -57,6 +58,8 @@ class _Transmitter:
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
             log.error('Dispositivo ({}) non trovato\n'.format(address))
+        except AttributeError:
+            log.error('AttributeError handled\n')
 
     def send_sync(self, address, packet):
         if self.device is None:
@@ -70,6 +73,8 @@ class _Transmitter:
                 self.device, XBee64BitAddress.from_hex_string(address)), packet.encode)
         except (TimeoutException, InvalidPacketException):
             log.error('ACK send_sync non ricevuto\n')
+        except AttributeError:
+            log.error('AttributeError handled\n')
 
     def send_broadcast(self, packet):
         self.device.send_data_broadcast(packet.encode)
