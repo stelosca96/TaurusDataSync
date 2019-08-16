@@ -22,11 +22,7 @@ BAUD_RATE = 115200
 # stringhe del tipo {};{};{};{}
 class _Transmitter:
     def __init__(self):
-        self._device = self._open_device(PORT, BAUD_RATE)
-
-    @property
-    def device(self):
-        return self._device
+        self.device = self._open_device(PORT, BAUD_RATE)
 
     def __del__(self):
         if self.device is not None:
