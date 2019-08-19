@@ -22,7 +22,9 @@ BAUD_RATE = 115200
 # stringhe del tipo {};{};{};{}
 class _Transmitter:
     def __init__(self):
-        self.device = self._open_device(PORT, BAUD_RATE)
+        self._device = None
+
+        self._open_device(PORT, BAUD_RATE)
 
     def __del__(self):
         if self.device is not None:
@@ -35,10 +37,14 @@ class _Transmitter:
         try:
             device.open()
             device.add_data_received_callback(self.receiver)
+            self._device = device
             log.info('Device ({}) connected\n'.format(device.get_64bit_addr()))
-            return device
         except (InvalidOperatingModeException, SerialException):
             log.error('Nessuna antenna trovata')
+
+    @property
+    def device(self):
+        return self._device
 
     @property
     def address(self):
@@ -52,7 +58,7 @@ class _Transmitter:
         except (TimeoutException, InvalidPacketException):
             log.error('Dispositivo ({}) non trovato\n'.format(address))
         except AttributeError:
-            log.error('AttributeError handled\n')
+            log.error('SEND: Antenna non collegata\n')
 
     def send_sync(self, address, packet):
         # aspetta l'ack, se scatta il
@@ -64,7 +70,7 @@ class _Transmitter:
         except (TimeoutException, InvalidPacketException):
             log.error('ACK send_sync non ricevuto\n')
         except AttributeError:
-            log.error('AttributeError handled\n')
+            log.error('SEND_SYNC: Antenna non collegata\n')
 
     def send_broadcast(self, packet):
         self.device.send_data_broadcast(packet.encode)
