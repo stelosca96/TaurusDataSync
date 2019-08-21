@@ -48,7 +48,7 @@ class _Transmitter:
 
     @property
     def address(self):
-        return self.device.get_64bit_addr()
+        return self.device.get_64bit_addr() if self.device is not None else 'None'
 
     # DIREZIONE: server --> bici
     def send(self, address, packet):
@@ -265,7 +265,7 @@ class Bike(_SuperBike):
         # come client dell'antenna
         self.transmitter.bike = self
 
-        # memorizza i pacchetti ricevuti
+        # memorizza i pacchetti ricevuti  (un pacchetto per tipo)
         self._memoize = list()
 
     def __len__(self):
@@ -282,18 +282,18 @@ class Bike(_SuperBike):
     def blind_send(self, packet: Packet):
         self.send(packet)
 
-    def send_data(self, d):
+    def send_data(self, d: dict):
         data = {'dest': self.code, 'type': Packet.Type.DATA}
         data.update(d)
         self.send(data)
 
     # NOTE: probabilmente da deprecare
-    def send_state(self, s):
+    def send_state(self, s: dict):
         state = {'dest': self.code, 'type': Packet.Type.STATE}
         state.update(s)
         self.send(state)
 
-    def send_setting(self, s):
+    def send_setting(self, s: dict):
         settings = {'dest': self.code, 'type': Packet.Type.SETTING}
         settings.update(s)
         self.send(settings)
